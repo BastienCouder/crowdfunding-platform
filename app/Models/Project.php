@@ -8,7 +8,7 @@ class Project extends Model
 {
     protected $fillable = [
         'user_id', 'title', 'description', 'goal_amount', 'current_amount',
-        'start_date', 'end_date', 'status', 'category_id',
+        'start_date', 'end_date', 'status', 'category_id','is_draft'
     ];
 
     protected $dates = ['end_date'];

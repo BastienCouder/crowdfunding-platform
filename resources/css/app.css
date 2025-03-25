@@ -15,3 +15,25 @@
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
 }
+
+.pagination {
+    @apply flex justify-center mt-8;
+  }
+  
+  .pagination .page-item {
+    @apply mx-1;
+  }
+  
+  .pagination .page-link {
+    @apply px-4 py-2 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition duration-300;
+  }
+  
+  .pagination .page-item.active .page-link {
+    @apply bg-lime-500 text-white border-lime-500 hover:bg-lime-600;
+  }
+  
+  .pagination .page-item.disabled .page-link {
+    @apply text-gray-400 cursor-not-allowed hover:bg-white;
+  }
+  
+  

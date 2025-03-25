@@ -20,6 +20,7 @@ return new class extends Migration
             $table->decimal('current_amount', 10, 2)->default(0);
             $table->date('start_date');
             $table->date('end_date');
+            $table->boolean('is_draft')->default(false);
             $table->enum('status', ['pending', 'approved', 'rejected', 'completed'])->default('pending');
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->timestamps();
