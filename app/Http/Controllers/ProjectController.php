@@ -73,13 +73,18 @@ class ProjectController extends Controller
     return redirect()->route('dashboard')->with('success', 'Projet mis à jour avec succès !');
 }
 
-    public function edit(Project $project)
+public function edit(Project $project)
 {
-    if (auth()->id() !== $project->user_id) {
-        abort(403, 'Vous n\'êtes pas autorisé à modifier ce projet.');
+    $categories = Category::all();
+    
+    // Convertir les dates en objets Carbon si ce sont des strings
+    if (is_string($project->start_date)) {
+        $project->start_date = \Carbon\Carbon::parse($project->start_date);
+    }
+    if (is_string($project->end_date)) {
+        $project->end_date = \Carbon\Carbon::parse($project->end_date);
     }
 
-    $categories = Category::all();
     return view('projects.edit', compact('project', 'categories'));
 }
 
@@ -93,5 +98,48 @@ class ProjectController extends Controller
 {
     $project->delete();
     return redirect()->route('dashboard')->with('success', 'Projet supprimé avec succès !');
+}
+public function myProjects()
+{
+    // Récupère uniquement les projets de l'utilisateur connecté
+    $projects = Project::where('user_id', auth()->id())
+                ->with('category')
+                ->latest()
+                ->paginate(10);
+
+    $categories = Category::all();
+    return view('projects.my-projects', compact('projects', 'categories'), ['current_step' => 1]);
+}
+
+public function createStep2(Request $request)
+{
+    // Valider les données de l'étape 1
+    $validated = $request->validate([
+        'title' => 'required|string|max:255',
+        'description' => 'required|string',
+        'goal_amount' => 'required|numeric|min:1',
+        'start_date' => 'required|date',
+        'end_date' => 'required|date|after:start_date',
+        'category_id' => 'required|exists:categories,id',
+    ]);
+
+    return view('projects.create-step2', [
+        'step1_data' => $validated,
+        'current_step' => 2
+    ]);
+}
+
+public function createStep3(Request $request)
+{
+    // Valider les données de l'étape 2
+    $validated = $request->validate([
+        'project_images' => 'required|array',
+        'project_images.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+    ]);
+
+    return view('projects.create-step3', [
+        'step1_data' => $request->all(),
+        'current_step' => 3
+    ]);
 }
 }

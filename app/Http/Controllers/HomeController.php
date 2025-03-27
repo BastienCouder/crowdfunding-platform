@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Project;
+use App\Models\Category;
 
 class HomeController extends Controller
 {
@@ -27,13 +28,13 @@ class HomeController extends Controller
  *
  * @return \Illuminate\Contracts\Support\Renderable
  */
-public function index()
+public function index(Request $request)
 {
     $user = auth()->user();
     $projects = $user->projects()->with(['category', 'contributions', 'images'])->latest()->paginate(10);
     
     // Récupérer toutes les catégories pour les filtres
-    $categories = \App\Models\Category::all();
+    $categories = Category::all();
     
     // Statistiques globales
     $activeProjects = $user->projects()->where('is_draft', false)
@@ -179,6 +180,54 @@ public function index()
     $categoryNames = $categoryData->keys()->toArray();
     $categoryAmounts = $categoryData->values()->toArray();
     
+      // Base query
+      $projectsQuery = $user->projects()->with(['category', 'contributions', 'images']);
+    
+      // Filtre par statut
+      if ($request->has('status')) {
+          switch ($request->status) {
+              case 'active':
+                  $projectsQuery->where('is_draft', false)
+                               ->whereDate('end_date', '>=', now());
+                  break;
+              case 'completed':
+                  $projectsQuery->whereDate('end_date', '<', now());
+                  break;
+              case 'draft':
+                  $projectsQuery->where('is_draft', true);
+                  break;
+          }
+      }
+      
+      // Filtre par catégorie
+      if ($request->has('category') && $request->category) {
+          $projectsQuery->where('category_id', $request->category);
+      }
+      
+      // Filtre de recherche
+      if ($request->has('search') && $request->search) {
+          $projectsQuery->where('title', 'like', '%'.$request->search.'%');
+      }
+      
+      // Tri
+      switch ($request->sort ?? 'newest') {
+          case 'oldest':
+              $projectsQuery->oldest();
+              break;
+          case 'amount-high':
+              $projectsQuery->withSum('contributions', 'amount')
+                           ->orderBy('contributions_sum_amount', 'desc');
+              break;
+          case 'amount-low':
+              $projectsQuery->withSum('contributions', 'amount')
+                           ->orderBy('contributions_sum_amount', 'asc');
+              break;
+          default:
+              $projectsQuery->latest();
+      }
+      
+      $projects = $projectsQuery->paginate(10);
+      
     return view('dashboard', compact(
         'projects',
         'categories',
@@ -194,6 +243,8 @@ public function index()
         'monthlyAmounts',
         'categoryNames',
         'categoryAmounts'
-    ));
+    )+ [
+        'currentFilters' => $request->only(['status', 'category', 'search', 'sort'])
+    ]);
 }
 }

@@ -1,6 +1,4 @@
-@extends('layouts.app')
-
-@section('content')
+<x-app-layout>
     <!-- Hero Section -->
     <section class="relative mb-12">
         <div class="relative rounded-lg mx-6 overflow-hidden">
@@ -193,4 +191,4 @@
             </div>
         </div>
     </section>
-@endsection
+</x-app-layout>
