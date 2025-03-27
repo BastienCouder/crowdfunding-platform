@@ -23,6 +23,23 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
+
+     public function welcome()
+{
+ 
+    
+    // Récupérer les 3 projets qui se terminent le plus tôt (et qui sont actifs)
+    $endingSoonProjects = Project::where('is_draft', false)
+        ->whereDate('end_date', '>=', now())
+        ->orderBy('end_date', 'asc')
+        ->take(3)
+        ->with(['user', 'images'])
+        ->get();
+    
+    return view('welcome', compact(
+        'endingSoonProjects'
+    ));
+}
 /**
  * Show the application dashboard.
  *

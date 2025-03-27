@@ -1,4 +1,5 @@
 <x-app-layout>
+    @include('layouts.navigation')
 <div class="bg-white min-h-screen">
     <!-- Hero Image Section -->
     <div class="relative">
@@ -130,47 +131,46 @@
                         @endforeach
                     </div>
                 </div>
+    <!-- Funding Tiers -->
+@if(!empty($project->funding_tiers) && count($project->funding_tiers) > 0)
+<div class="mb-12">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-lime-500 mr-2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+        </svg>
+        Paliers de financement
+    </h2>
+    <div class="space-y-4">
+        @foreach($project->funding_tiers as $tier)
+            <div class="bg-white border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-lg font-bold text-gray-900">{{ isset($tier->title) && !empty($tier->title) ? $tier->title : 'Sans titre' }}</h3>
+                    <span class="text-lime-600 font-bold">{{ number_format($tier->amount, 0, ',', ' ') }} €</span>
+                </div>
+                <p class="text-gray-700">{{ isset($tier->reward) && !empty($tier->reward) ? $tier->reward : 'Sans récompense' }}</p>
                 
-                <!-- Funding Tiers -->
-                @if(isset($project->funding_tiers) && count($project->funding_tiers) > 0)
-                <div class="mb-12">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-lime-500 mr-2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
-                        </svg>
-                        Paliers de financement
-                    </h2>
-                    <div class="space-y-4">
-                        @foreach($project->funding_tiers as $tier)
-                            <div class="bg-white border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
-                                <div class="flex justify-between items-center mb-3">
-                                    <h3 class="text-lg font-bold text-gray-900">{{ $tier->title }}</h3>
-                                    <span class="text-lime-600 font-bold">{{ number_format($tier->amount, 0, ',', ' ') }} €</span>
-                                </div>
-                                <p class="text-gray-700">{{ $tier->description }}</p>
-                                
-                                @php
-                                    $tierPercentage = min(100, round(($project->current_amount / $tier->amount) * 100));
-                                @endphp
-                                
-                                <div class="mt-4">
-                                    <div class="w-full bg-gray-100 rounded-full h-2 mb-2">
-                                        <div class="bg-lime-500 h-2 rounded-full" style="width: {{ $tierPercentage }}%"></div>
-                                    </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="font-medium">{{ $tierPercentage }}% atteint</span>
-                                        @if($project->current_amount >= $tier->amount)
-                                            <span class="text-lime-600 font-medium">Palier atteint !</span>
-                                        @else
-                                            <span class="text-gray-500">{{ number_format($tier->amount - $project->current_amount, 0, ',', ' ') }} € restants</span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
+                @php
+                    $tierPercentage = min(100, round(($project->current_amount / $tier->amount) * 100));
+                @endphp
+                
+                <div class="mt-4">
+                    <div class="w-full bg-gray-100 rounded-full h-2 mb-2">
+                        <div class="bg-lime-500 h-2 rounded-full" style="width: {{ $tierPercentage }}%"></div>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="font-medium">{{ $tierPercentage }}% atteint</span>
+                        @if($project->current_amount >= $tier->amount)
+                            <span class="text-lime-600 font-medium">Palier atteint !</span>
+                        @else
+                            <span class="text-gray-500">{{ number_format($tier->amount - $project->current_amount, 0, ',', ' ') }} € restants</span>
+                        @endif
                     </div>
                 </div>
-                @endif
+            </div>
+        @endforeach
+    </div>
+</div>
+@endif
                 
                 <!-- Risks and Challenges -->
                 @if(isset($project->risks) && !empty($project->risks))
@@ -200,14 +200,14 @@
                         @foreach($project->faqs as $faq)
                             <div class="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
                                 <div class="faq-header p-5 cursor-pointer flex justify-between items-center">
-                                    <h3 class="font-medium text-gray-900">{{ $faq->question }}</h3>
+                                    <h3 class="font-medium text-gray-900">{{ $faq['question'] }}</h3>
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-500 faq-icon">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                                     </svg>
                                 </div>
                                 <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 px-5">
                                     <div class="py-4 border-t border-gray-100">
-                                        <p class="text-gray-700">{{ $faq->answer }}</p>
+                                        <p class="text-gray-700">{{ $faq['answer'] }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -271,14 +271,14 @@
                     @endif
                 </div>
 
-                <!-- Comments Section -->
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-lime-500 mr-2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
-                        </svg>
-                        Commentaires ({{ count($project->comments) }})
-                    </h2>
+               <!-- Comments Section -->
+<div>
+    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-lime-500 mr-2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+        </svg>
+        Commentaires ({{ count($project->comments) }})
+    </h2>
                     
                     <!-- Comment Form -->
                     <div class="bg-gray-50 rounded-xl p-6 mb-8">
@@ -301,8 +301,8 @@
                     
                     <!-- Comments List -->
                     @if(count($project->comments) > 0)
-                        <div class="space-y-6">
-                            @foreach ($project->comments as $comment)
+        <div class="space-y-6">
+            @foreach ($project->comments->take(5) as $comment)
                                 <div class="bg-white border border-gray-100 rounded-xl p-6 shadow-sm">
                                     <div class="flex items-center mb-4">
                                         <img src="{{ $comment->user->avatar }}" alt="{{ $comment->user->name }}" class="w-12 h-12 rounded-full mr-4 border border-lime-200">
@@ -330,7 +330,51 @@
                                     </div>
                                 </div>
                             @endforeach
+
+                             <!-- Commentaires supplémentaires cachés -->
+            @if(count($project->comments) > 5)
+                <div class="extra-comments hidden space-y-6">
+                    @foreach ($project->comments->slice(5) as $comment)
+                    <div class="bg-white border border-gray-100 rounded-xl p-6 shadow-sm">
+                                    <div class="flex items-center mb-4">
+                                        <img src="{{ $comment->user->avatar }}" alt="{{ $comment->user->name }}" class="w-12 h-12 rounded-full mr-4 border border-lime-200">
+                                        <div>
+                                            <p class="font-semibold text-gray-900">{{ $comment->user->name }}</p>
+                                            <p class="text-sm text-gray-500">{{ $comment->created_at->format('d M Y, H:i') }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="prose prose-sm max-w-none">
+                                        <p class="text-gray-700">{{ $comment->content }}</p>
+                                    </div>
+                                    <div class="mt-4 flex items-center space-x-4">
+                                        <button class="text-gray-500 hover:text-lime-600 flex items-center text-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.633 10.5c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75A2.25 2.25 0 0116.5 4.5c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23H5.904M14.25 9h2.25M5.904 18.75c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 01-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 10.203 4.167 9.75 5 9.75h1.053c.472 0 .745.556.5.96a8.958 8.958 0 00-1.302 4.665c0 1.194.232 2.333.654 3.375z" />
+                                            </svg>
+                                            J'aime
+                                        </button>
+                                        <button class="text-gray-500 hover:text-lime-600 flex items-center text-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+                                            </svg>
+                                            Répondre
+                                        </button>
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
+
+                         <!-- Bouton Voir plus -->
+                <div class="text-center mt-6">
+                    <button id="showMoreComments" class="inline-flex items-center px-4 py-2 rounded-full border border-lime-500 text-lime-600 hover:bg-lime-50 transition-colors">
+                        <span id="commentButtonText">Voir plus de commentaires</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 ml-2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                </div>
+            @endif
+            </div>
                     @else
                         <div class="bg-gray-50 rounded-xl p-8 text-center">
                             <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-lime-100 mb-4">
@@ -415,23 +459,14 @@
                     <div class="border-t border-gray-100 pt-6">
                         <h3 class="font-medium text-gray-900 mb-4">Partager ce projet</h3>
                         <div class="flex space-x-3">
-                            <a href="#" class="bg-[#1877F2] text-white p-2 rounded-lg hover:bg-opacity-90 transition-colors">
+                            <a href="#" class="bg-lime-500 text-white p-2 rounded-lg hover:bg-opacity-90 transition-colors">
                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd"></path></svg>
                             </a>
-                            <a href="#" class="bg-[#1DA1F2] text-white p-2 rounded-lg hover:bg-opacity-90 transition-colors">
+                            <a href="#" class="bg-lime-500 text-white p-2 rounded-lg hover:bg-opacity-90 transition-colors">
                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path></svg>
                             </a>
-                            <a href="#" class="bg-[#25D366] text-white p-2 rounded-lg hover:bg-opacity-90 transition-colors">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M21.105 4.603C20.212 3.712 19.144 3 18 3s-2.212.712-3.105 1.603l-1.603 1.603a2.25 2.25 0 00-.65 1.582v2.462a.75.75 0 01-1.5 0V7.788a3.75 3.75 0 011.085-2.637l1.603-1.603a6.75 6.75 0 019.539 0l1.603 1.603a6.75 6.75 0 010 9.539l-1.603 1.603a6.75 6.75 0 01-9.539 0l-.789-.79a.75.75 0 111.06-1.06l.79.789a5.25 5.25 0 007.418 0l1.603-1.603a5.25 5.25 0 000-7.418l-1.603-1.603a5.25 5.25 0 00-7.418 0l-1.603 1.603a5.25 5.25 0 00-1.476 3.704v4.764a.75.75 0 01-1.5 0v-2.288a4.25 4.25 0 00-1.2-2.969l-.478-.478a.75.75 0 01-.528-.22L4.603 7.853a.75.75 0 010-1.06L7.853 3.55a.75.75 0 011.06 0z" clip-rule="evenodd" />
-                                </svg>
-                            </a>
-                            <a href="#" class="bg-[#E60023] text-white p-2 rounded-lg hover:bg-opacity-90 transition-colors">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                    <path d="M12 2C6.477 2 2 6.477 2 12c0 4.237 2.636 7.855 6.356 9.312-.088-.791-.167-2.005.035-2.868.181-.78 1.172-4.97 1.172-4.97s-.299-.6-.299-1.486c0-1.39.806-2.428 1.81-2.428.852 0 1.264.64 1.264 1.408 0 .858-.546 2.14-.828 3.33-.236.995.5 1.807 1.48 1.807 1.778 0 3.144-1.874 3.144-4.58 0-2.393-1.72-4.068-4.177-4.068-2.845 0-4.515 2.135-4.515 4.34 0 .859.331 1.781.745 2.281a.3.3 0 01.069.288l-.278 1.133c-.044.183-.145.223-.335.134-1.249-.581-2.03-2.407-2.03-3.874 0-3.154 2.292-6.052 6.608-6.052 3.469 0 6.165 2.473 6.165 5.776 0 3.447-2.173 6.22-5.19 6.22-1.013 0-1.965-.525-2.291-1.148l-.623 2.378c-.226.869-.835 1.958-1.244 2.621.937.29 1.931.446 2.962.446 5.523 0 10-4.477 10-10S17.523 2 12 2z" />
-                                </svg>
-                            </a>
-                            <a href="#" class="bg-gray-800 text-white p-2 rounded-lg hover:bg-opacity-90 transition-colors">
+
+                            <a href="#" class="bg-lime-500 text-white p-2 rounded-lg hover:bg-opacity-90 transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
                                 </svg>
@@ -462,6 +497,39 @@
                     buttonText.textContent = 'Masquer les contributions';
                 } else {
                     buttonText.textContent = 'Voir toutes les contributions';
+                }
+            });
+        }
+
+        const showMoreCommentsBtn = document.getElementById('showMoreComments');
+        if (showMoreCommentsBtn) {
+            showMoreCommentsBtn.addEventListener('click', function() {
+                const extraComments = document.querySelector('.extra-comments');
+                const buttonText = document.getElementById('commentButtonText');
+                
+                if (extraComments.classList.contains('hidden')) {
+                    // Afficher avec animation
+                    extraComments.classList.remove('hidden');
+                    extraComments.style.maxHeight = '0';
+                    extraComments.style.overflow = 'hidden';
+                    extraComments.style.transition = 'max-height 0.3s ease-out';
+                    
+                    // Calculer la hauteur totale
+                    const scrollHeight = extraComments.scrollHeight;
+                    
+                    // Appliquer la hauteur
+                    setTimeout(() => {
+                        extraComments.style.maxHeight = scrollHeight + 'px';
+                    }, 10);
+                    
+                    buttonText.textContent = 'Voir moins de commentaires';
+                } else {
+                    // Masquer avec animation
+                    extraComments.style.maxHeight = '0';
+                    setTimeout(() => {
+                        extraComments.classList.add('hidden');
+                    }, 300);
+                    buttonText.textContent = 'Voir plus de commentaires';
                 }
             });
         }

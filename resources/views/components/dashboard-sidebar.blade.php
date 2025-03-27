@@ -31,6 +31,14 @@
                     Tableau de bord
                 </a>
                 
+                <!-- Les projets -->
+                <!-- <a href="{{ route('projects.index') }}" class="{{ request()->routeIs('projects.index') ? 'bg-lime-50 text-lime-700' : 'text-gray-700 hover:bg-gray-50' }} group flex items-center px-4 py-2 text-sm font-medium rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="{{ request()->routeIs('projects.index') ? 'text-lime-500' : 'text-gray-500 group-hover:text-gray-600' }} mr-3 flex-shrink-0 h-5 w-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75A.75.75 0 013 6a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5h-16.5a.75.75 0 01-.75-.75zM3.75 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5h-16.5a.75.75 0 01-.75-.75z" />
+                    </svg>
+                    Collectes
+                </a> -->
+
                 <!-- Mes projets -->
                 <a href="{{ route('projects.my-projects') }}" class="{{ request()->routeIs('projects.index') ? 'bg-lime-50 text-lime-700' : 'text-gray-700 hover:bg-gray-50' }} group flex items-center px-4 py-2 text-sm font-medium rounded-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="{{ request()->routeIs('projects.index') ? 'text-lime-500' : 'text-gray-500 group-hover:text-gray-600' }} mr-3 flex-shrink-0 h-5 w-5">
@@ -47,22 +55,22 @@
                     Créer un projet
                 </a>
                 
-             <!--    Contributions
-                <a class="{{ request()->routeIs('contributions.index') ? 'bg-lime-50 text-lime-700' : 'text-gray-700 hover:bg-gray-50' }} group flex items-center px-4 py-2 text-sm font-medium rounded-lg">
+             <!--    Contributions     -->
+                <a href="{{ route('contributions.index') }}" class="{{ request()->routeIs('contributions.index') ? 'bg-lime-50 text-lime-700' : 'text-gray-700 hover:bg-gray-50' }} group flex items-center px-4 py-2 text-sm font-medium rounded-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="{{ request()->routeIs('contributions.index') ? 'text-lime-500' : 'text-gray-500 group-hover:text-gray-600' }} mr-3 flex-shrink-0 h-5 w-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
                     </svg>
                     Contributions
                 </a>
                 
-                Commentaires 
-                <a class="{{ request()->routeIs('comments.index') ? 'bg-lime-50 text-lime-700' : 'text-gray-700 hover:bg-gray-50' }} group flex items-center px-4 py-2 text-sm font-medium rounded-lg">
+                <!-- Commentaires   -->
+                <a href="{{ route('comments.index') }}" class="{{ request()->routeIs('comments.index') ? 'bg-lime-50 text-lime-700' : 'text-gray-700 hover:bg-gray-50' }} group flex items-center px-4 py-2 text-sm font-medium rounded-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="{{ request()->routeIs('comments.index') ? 'text-lime-500' : 'text-gray-500 group-hover:text-gray-600' }} mr-3 flex-shrink-0 h-5 w-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
                     </svg>
                     Commentaires
                 </a>
-                -->
+              
                 <div class="pt-4 mt-4 border-t border-gray-100">
                     <h3 class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Paramètres</h3>
                 </div>
@@ -107,12 +115,7 @@
             </button>
             
             <!-- En-tête de la barre supérieure -->
-            <div class="flex-1 px-4 flex justify-between">
-                <div class="flex-1 flex items-center">
-                    <h1 class="text-lg font-semibold text-gray-900">
-                        @yield('header-title', 'Tableau de bord')
-                    </h1>
-                </div>
+            <div class="flex-1 px-4 flex justify-end">
                 <div class="ml-4 flex items-center md:ml-6">
                     
                     <!-- Menu déroulant du profil -->

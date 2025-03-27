@@ -9,14 +9,18 @@ use App\Http\Controllers\MigrationCheckerController;
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [HomeController::class, 'welcome'])->name('welcome');
 Route::get('/check-migrations', [MigrationCheckerController::class, 'updateMigrations']);
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
     
+    Route::get('/contributions', [ContributionController::class, 'index'])->name('contributions.index');
+    Route::get('/comments', [CommentController::class, 'index'])->name('comments.index');
+    Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

@@ -1,4 +1,5 @@
 <x-app-layout>
+@include('layouts.navigation')
     <div class="bg-white min-h-screen">
         <!-- Hero Section -->
         <div class="relative bg-gray-50 pt-16 pb-12">

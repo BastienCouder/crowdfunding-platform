@@ -8,14 +8,19 @@
             <span class="ml-2 font-semibold text-lg">Fund</span>
         </a>
         <div class="hidden md:flex space-x-8">
-            <a href="#" class="text-gray-800 hover:text-gray-600">Home</a>
-            <a href="#" class="text-gray-800 hover:text-gray-600">Donation</a>
-            <a href="#" class="text-gray-800 hover:text-gray-600">How it Works</a>
-            <a href="#" class="text-gray-800 hover:text-gray-600">About Us</a>
+            <a href="#" class="text-gray-800 hover:text-gray-600">Accueil</a>
+            <a href="#" class="text-gray-800 hover:text-gray-600">Dons</a>
+            <a href="#" class="text-gray-800 hover:text-gray-600">Fonctionnement</a>
+            <a href="#" class="text-gray-800 hover:text-gray-600">À propos</a>
         </div>
     </div>
-    <a href="#" class="bg-lime-300 hover:bg-lime-400 text-gray-800 px-4 py-2 rounded-full text-sm font-medium">
-        Download App
-    </a>
+    @auth
+        <a href="{{ route('dashboard') }}" class="bg-lime-300 hover:bg-lime-400 text-gray-800 px-4 py-2 rounded-full text-sm font-medium">
+            Tableau de bord
+        </a>
+    @else
+        <a href="#" class="bg-lime-300 hover:bg-lime-400 text-gray-800 px-4 py-2 rounded-full text-sm font-medium">
+            Télécharger l'app
+        </a>
+    @endauth
 </nav>
-

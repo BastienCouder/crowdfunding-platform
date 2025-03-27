@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-dashboard-sidebar>       
         <div class="py-8">
-            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-4xl px-4 sm:px-6 lg:px-8">
                 <!-- En-tête -->
-                <div class="mb-8 text-center">
-                    <h1 class="text-3xl font-bold text-gray-900">Lancez votre projet</h1>
-            <p class="mt-2 text-gray-600">Partagez votre idée et commencez à collecter des fonds</p>
+                <div class="mb-8">
+                    <h1 class="text-2xl font-bold text-gray-900">Lancez votre projet</h1>
+            <p class="mt-1 text-sm text-gray-500">Partagez votre idée et commencez à collecter des fonds</p>
         </div>
         
         <!-- Formulaire -->
