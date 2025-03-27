@@ -31,8 +31,10 @@ Route::middleware('auth')->group(function () {
             Route::get('/my-projects', [ProjectController::class, 'myProjects'])->name('projects.my-projects');
             Route::get('/', [ProjectController::class, 'index'])->name('projects.index');
             Route::get('/create', [ProjectController::class, 'create'])->name('projects.create');
-            Route::post('/projects/create-step2', [ProjectController::class, 'createStep2'])->name('projects.create-step2');
-            Route::post('/projects/create-step3', [ProjectController::class, 'createStep3'])->name('projects.create-step3');
+            Route::post('/create/step1', [ProjectController::class, 'storeStep1'])->name('projects.store-step1');
+            Route::get('/create/step2', [ProjectController::class, 'showStep2'])->name('projects.show-step2');
+            Route::post('/create/step2', [ProjectController::class, 'storeStep2'])->name('projects.store-step2');
+            Route::get('/create/step3', [ProjectController::class, 'showStep3'])->name('projects.show-step3');
             Route::post('/', [ProjectController::class, 'store'])->name('projects.store');
             Route::get('/{project}', [ProjectController::class, 'show'])->name('projects.show');
             Route::get('/{project}/edit', [ProjectController::class, 'edit'])->name('projects.edit');

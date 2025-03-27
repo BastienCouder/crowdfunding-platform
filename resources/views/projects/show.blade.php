@@ -198,7 +198,7 @@
                     </h2>
                     <div class="space-y-4">
                         @foreach($project->faqs as $faq)
-                            <div class="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+                            <div class="faq-item bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
                                 <div class="faq-header p-5 cursor-pointer flex justify-between items-center">
                                     <h3 class="font-medium text-gray-900">{{ $faq['question'] }}</h3>
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-500 faq-icon">

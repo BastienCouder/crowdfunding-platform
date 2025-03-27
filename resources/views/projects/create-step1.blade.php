@@ -10,7 +10,7 @@
         
         <!-- Formulaire -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <form action="{{ route('projects.create-step2') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('projects.store-step1') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 
                 <!-- Affiche les erreurs de validation -->

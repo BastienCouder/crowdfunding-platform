@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('project_images', function (Blueprint $table) {
             $table->id();
             $table->foreignId('project_id')->constrained()->onDelete('cascade');
-            $table->string('image_url');
+            $table->text('image_data'); // Stockage du base64 (text pour les grandes images)
+            $table->string('mime_type'); // Stockage du type MIME (ex: image/jpeg)
             $table->boolean('is_main')->default(false);
             $table->timestamps();
         });

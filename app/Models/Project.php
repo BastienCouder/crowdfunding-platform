@@ -105,4 +105,35 @@ public function daysLeft()
     $days = now()->diffInDays($this->end_date, false);
     return number_format(max(0, $days), 0); // Formatage sans décimales
 }
+
+public function storeImages(array $images)
+{
+    foreach ($images as $image) {
+        // $image devrait être un tableau avec 'data' (base64) et 'is_main'
+        $base64 = $image['data'];
+        $isMain = $image['is_main'] ?? false;
+
+        // Extraire le type MIME et les données base64
+        [$mimeType, $imageData] = $this->parseBase64($base64);
+
+        $this->images()->create([
+            'image_data' => $imageData,
+            'mime_type' => $mimeType,
+            'is_main' => $isMain
+        ]);
+    }
+}
+
+protected function parseBase64($base64)
+{
+    // Format attendu: "data:image/png;base64,AAA..."
+    $matches = [];
+    preg_match('/^data:([^;]+);base64,(.*)$/', $base64, $matches);
+    
+    if (count($matches) !== 3) {
+        throw new \Exception('Format base64 invalide');
+    }
+
+    return [$matches[1], $matches[2]];
+}
 }
