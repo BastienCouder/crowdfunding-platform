@@ -22,29 +22,49 @@ class ProjectController extends Controller
     }
 
     public function store(Request $request)
-{
-
-    $validatedData = $request->validate([
-        'title' => 'required|string|max:255',
-        'description' => 'required|string',
-        'goal_amount' => 'required|numeric|min:1',
-        'start_date' => 'required|date',
-        'end_date' => 'required|date|after:start_date',
-        'category_id' => 'required|exists:categories,id',
-    ]);
-
-    Project::create([
-        'user_id' => auth()->id(),
-        'title' => $validatedData['title'],
-        'description' => $validatedData['description'],
-        'goal_amount' => $validatedData['goal_amount'],
-        'start_date' => $validatedData['start_date'],
-        'end_date' => $validatedData['end_date'],
-        'category_id' => $validatedData['category_id'],
-    ]);
-
-    return redirect()->route('dashboard')->with('success', 'Projet créé avec succès !');
-}
+    {
+        // Validation des données du projet
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'goal_amount' => 'required|numeric|min:1',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
+            'category_id' => 'required|exists:categories,id',
+            'image_urls' => 'nullable|array', // Validation des URLs d'images
+            'image_urls.*' => 'url', // Validation de chaque URL
+        ]);
+    
+        // Création du projet
+        $project = Project::create([
+            'user_id' => auth()->id(),
+            'title' => $validatedData['title'],
+            'description' => $validatedData['description'],
+            'goal_amount' => $validatedData['goal_amount'],
+            'start_date' => $validatedData['start_date'],
+            'end_date' => $validatedData['end_date'],
+            'category_id' => $validatedData['category_id'],
+        ]);
+    
+        // Ajout des URLs d'images
+        if (!empty($validatedData['image_urls'])) {
+            foreach ($validatedData['image_urls'] as $imageUrl) {
+                $project->images()->create(['image_url' => $imageUrl]);
+            }
+        }
+    
+        if ($request->has('image_urls')) {
+            $imageUrls = $request->input('image_urls');
+            foreach ($imageUrls as &$url) {
+                if (!empty($url) && !preg_match('~^(https?://)~i', $url)) {
+                    $url = 'https://' . $url; // Ajoute "https://" si manquant
+                }
+            }
+            $request->merge(['image_urls' => $imageUrls]);
+        }
+        
+        return redirect()->route('dashboard')->with('success', 'Projet créé avec succès !');
+    }
 
     public function update(Request $request, Project $project)
 {

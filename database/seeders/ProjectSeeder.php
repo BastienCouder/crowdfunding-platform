@@ -34,9 +34,9 @@ class ProjectSeeder extends Seeder
                 'goal_amount' => 25000,
                 'category_id' => $categories->where('name', 'Écologie')->first()->id,
                 'images' => [
-                    'https://images.unsplash.com/photo-1546883648-8c5648200abc?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                    'https://source.unsplash.com/640x480/?windmill,france',
-                    'https://source.unsplash.com/640x480/?energy,france',
+                    'https://images.unsplash.com/photo-1598064902710-b3b0ebb32ffd?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    'https://images.unsplash.com/photo-1647220576336-f2e94680f3b8?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    'https://images.unsplash.com/photo-1676170535304-f3c790124bee?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
                 ],
             ],
             [
@@ -45,9 +45,9 @@ class ProjectSeeder extends Seeder
                 'goal_amount' => 50000,
                 'category_id' => $categories->where('name', 'Agriculture durable')->first()->id,
                 'images' => [
-                    'https://images.unsplash.com/photo-1546883648-8c5648200abc?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                    'https://source.unsplash.com/640x480/?windmill,france',
-                    'https://source.unsplash.com/640x480/?energy,france',
+                    'https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    'https://images.unsplash.com/photo-1529313780224-1a12b68bed16?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    'https://images.unsplash.com/photo-1616364851431-b8c1de89d315?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
                 ],
             ],
             [
@@ -56,9 +56,9 @@ class ProjectSeeder extends Seeder
                 'goal_amount' => 75000,
                 'category_id' => $categories->where('name', 'Recyclage')->first()->id,
                 'images' => [
-                    'https://images.unsplash.com/photo-1546883648-8c5648200abc?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                    'https://source.unsplash.com/640x480/?windmill,france',
-                    'https://source.unsplash.com/640x480/?energy,france',
+                    'https://images.unsplash.com/photo-1610093674388-cee0337f2684?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    'https://images.unsplash.com/photo-1621408422508-240627e2252a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    'https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
                 ],
             ],
             [
@@ -67,9 +67,9 @@ class ProjectSeeder extends Seeder
                 'goal_amount' => 30000,
                 'category_id' => $categories->where('name', 'Protection des animaux')->first()->id,
                 'images' => [
-                    'https://images.unsplash.com/photo-1546883648-8c5648200abc?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                    'https://source.unsplash.com/640x480/?windmill,france',
-                    'https://source.unsplash.com/640x480/?energy,france',
+                    'https://images.unsplash.com/photo-1572008125457-15e3be61ce3e?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    'https://images.unsplash.com/photo-1558369359-32c0fb3c83cc?q=80&w=1958&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                    'https://images.unsplash.com/photo-1629070314158-660a52fe9dd3?q=80&w=1933&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
                 ],
             ],
         ];

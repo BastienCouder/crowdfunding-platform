@@ -69,6 +69,14 @@
                 <input type="date" name="end_date" id="end_date" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" required>
             </div>
         </div>
+
+        <!-- URLs des images -->
+<div>
+    <label for="image_urls" class="block text-sm font-medium text-gray-700 mb-1">URLs des images</label>
+    <input type="text" name="image_urls[]" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Entrez l'URL d'une image">
+    <input type="text" name="image_urls[]" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition mt-2" placeholder="Entrez une autre URL d'image (optionnel)">
+    <input type="text" name="image_urls[]" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition mt-2" placeholder="Entrez une autre URL d'image (optionnel)">
+</div>
     </div>
 
     
