@@ -31,7 +31,7 @@
                     </div>
                     <div class="ml-4">
                         <h2 class="text-sm font-medium text-gray-500">Total des contributions</h2>
-                        <p class="text-2xl font-bold text-gray-900">{{ number_format($totalAmount ?? 0, 0, ',', ' ') }} €</p>
+                        <p class="text-2xl font-bold text-gray-900" data-stat="total-amount">{{ number_format($totalAmount ?? 0, 0, ',', ' ') }} €</p>
                     </div>
                 </div>
             </div>
@@ -46,7 +46,7 @@
                     </div>
                     <div class="ml-4">
                         <h2 class="text-sm font-medium text-gray-500">Projets soutenus</h2>
-                        <p class="text-2xl font-bold text-gray-900">{{ $supportedProjects ?? 0 }}</p>
+                        <p class="text-2xl font-bold text-gray-900" data-stat="supported-projects">{{ $supportedProjects ?? 0 }}</p>
                     </div>
                 </div>
             </div>
@@ -61,7 +61,7 @@
                     </div>
                     <div class="ml-4">
                         <h2 class="text-sm font-medium text-gray-500">Contribution moyenne</h2>
-                        <p class="text-2xl font-bold text-gray-900">{{ number_format($averageAmount ?? 0, 0, ',', ' ') }} €</p>
+                        <p class="text-2xl font-bold text-gray-900" data-stat="average-amount">{{ number_format($averageAmount ?? 0, 0, ',', ' ') }} €</p>
                     </div>
                 </div>
             </div>
@@ -81,20 +81,20 @@
                     </div>
                 </div>
                 <div class="flex flex-wrap gap-2">
-                    <select id="status-filter" class="border border-gray-200 rounded-lg px-3 py-2 focus:ring-lime-500 focus:border-lime-500">
+                    <select id="status-filter" class="w-auto pr-10 border border-gray-200 rounded-lg px-3 py-2 focus:ring-lime-500 focus:border-lime-500">
                         <option value="">Tous les statuts</option>
                         <option value="completed">Réussis</option>
                         <option value="active">En cours</option>
                         <option value="failed">Échoués</option>
                     </select>
-                    <select id="date-filter" class="border border-gray-200 rounded-lg px-3 py-2 focus:ring-lime-500 focus:border-lime-500">
+                    <select id="date-filter" class="w-auto pr-10 border border-gray-200 rounded-lg px-3 py-2 focus:ring-lime-500 focus:border-lime-500">
                         <option value="">Toutes les dates</option>
                         <option value="this-month">Ce mois-ci</option>
                         <option value="last-month">Le mois dernier</option>
                         <option value="this-year">Cette année</option>
                         <option value="last-year">L'année dernière</option>
                     </select>
-                    <select id="sort-by" class="border border-gray-200 rounded-lg px-3 py-2 focus:ring-lime-500 focus:border-lime-500">
+                    <select id="sort-by" class="w-auto pr-10 border border-gray-200 rounded-lg px-3 py-2 focus:ring-lime-500 focus:border-lime-500">
                         <option value="newest">Plus récents</option>
                         <option value="oldest">Plus anciens</option>
                         <option value="amount-high">Montant (décroissant)</option>
@@ -123,56 +123,7 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach($contributions as $contribution)
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10">
-                                                @if($contribution->project->images && count($contribution->project->images) > 0)
-                                                    <img class="h-10 w-10 rounded-lg object-cover" src="{{ $contribution->project->images[0]->image_url }}" alt="{{ $contribution->project->title }}">
-                                                @else
-                                                    <div class="h-10 w-10 rounded-lg bg-gray-200 flex items-center justify-center">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-400">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                                                        </svg>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">{{ $contribution->project->title }}</div>
-                                                <div class="text-sm text-gray-500">{{ Str::limit($contribution->project->description, 50) }}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-bold text-lime-600">{{ number_format($contribution->amount, 0, ',', ' ') }} €</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900">{{ $contribution->created_at->format('d/m/Y') }}</div>
-                                        <div class="text-xs text-gray-500">{{ $contribution->created_at->format('H:i') }}</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($contribution->project->end_date->isPast())
-                                            @if($contribution->project->current_amount >= $contribution->project->goal_amount)
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                    Projet réussi
-                                                </span>
-                                            @else
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                                    Projet échoué
-                                                </span>
-                                            @endif
-                                        @else
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                                En cours
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <a href="{{ route('projects.show', $contribution->project) }}" class="text-lime-600 hover:text-lime-900">Voir le projet</a>
-                                    </td>
-                                </tr>
-                            @endforeach
+                            @include('contribution.partials.contributions-table')
                         </tbody>
                     </table>
                 </div>
@@ -245,7 +196,7 @@
                                         @if($project->end_date->isPast())
                                             <span class="text-red-500">Terminé</span>
                                         @else
-                                            {{ $project->end_date->diffInDays(now()) }} jours restants
+                                            {{ $project->daysLeft() }} jours restants
                                         @endif
                                     </span>
                                 </div>
@@ -269,42 +220,89 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Filtres
-        const searchInput = document.getElementById('search');
-        const statusFilter = document.getElementById('status-filter');
-        const dateFilter = document.getElementById('date-filter');
-        const sortBy = document.getElementById('sort-by');
-        
-        // Fonction pour appliquer les filtres
-        function applyFilters() {
-            // Ici, vous pourriez implémenter une logique AJAX pour filtrer les résultats
-            // sans recharger la page, ou rediriger vers une URL avec les paramètres de filtre
-            
-            const searchValue = searchInput.value;
-            const statusValue = statusFilter.value;
-            const dateValue = dateFilter.value;
-            const sortValue = sortBy.value;
-            
-            console.log('Filtres appliqués:', {
-                search: searchValue,
-                status: statusValue,
-                date: dateValue,
-                sort: sortValue
-            });
-            
-            // Exemple de redirection avec paramètres
-            // window.location.href = `{{ route('contributions.index') }}?search=${searchValue}&status=${statusValue}&date=${dateValue}&sort=${sortValue}`;
-        }
-        
-        // Ajouter des écouteurs d'événements
-        searchInput.addEventListener('input', applyFilters);
-        statusFilter.addEventListener('change', applyFilters);
-        dateFilter.addEventListener('change', applyFilters);
-        sortBy.addEventListener('change', applyFilters);
-    });
+ 
 </script>
 </x-dashboard-sidebar>
 </x-app-layout>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search');
+    const statusFilter = document.getElementById('status-filter');
+    const dateFilter = document.getElementById('date-filter');
+    const sortBy = document.getElementById('sort-by');
+    const contributionsContainer = document.querySelector('table tbody');
+    const paginationContainer = document.querySelector('.px-6.py-4.border-t');
+    const statsElements = {
+        totalAmount: document.querySelector('[data-stat="total-amount"]'),
+        supportedProjects: document.querySelector('[data-stat="supported-projects"]'),
+        averageAmount: document.querySelector('[data-stat="average-amount"]')
+    };
+    
+    let timer;
+    const debounceTime = 500;
+
+    function loadContributions() {
+        const filters = {
+            search: searchInput.value,
+            status: statusFilter.value,
+            'date-filter': dateFilter.value,
+            sort: sortBy.value
+        };
+
+        // Construire les paramètres URL
+        const params = new URLSearchParams();
+        Object.entries(filters).forEach(([key, value]) => {
+            if (value) params.append(key, value);
+        });
+
+        // Mettre à jour l'URL
+        const newUrl = `${window.location.pathname}?${params.toString()}`;
+        window.history.pushState({}, '', newUrl);
+
+        // Envoyer la requête AJAX
+        fetch(`${window.location.pathname}?${params.toString()}&ajax=1`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            if (contributionsContainer) {
+                contributionsContainer.innerHTML = data.table;
+            }
+            if (paginationContainer) {
+                paginationContainer.innerHTML = data.pagination;
+            }
+            if (statsElements.totalAmount) {
+                statsElements.totalAmount.textContent = `${data.stats.totalAmount} €`;
+            }
+            if (statsElements.supportedProjects) {
+                statsElements.supportedProjects.textContent = data.stats.supportedProjects;
+            }
+            if (statsElements.averageAmount) {
+                statsElements.averageAmount.textContent = `${data.stats.averageAmount} €`;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading contributions:', error);
+        });
+    }
+
+    // Écouteurs d'événements
+    [searchInput, statusFilter, dateFilter, sortBy].forEach(element => {
+        element?.addEventListener('change', function() {
+            clearTimeout(timer);
+            timer = setTimeout(loadContributions, debounceTime);
+        });
+    });
+
+    searchInput?.addEventListener('input', function() {
+        clearTimeout(timer);
+        timer = setTimeout(loadContributions, debounceTime);
+    });
+});
+</script>
 
 

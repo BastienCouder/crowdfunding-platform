@@ -413,7 +413,7 @@
                                 @if ($project->end_date->isPast())
                                     <span class="text-red-500 font-medium">Terminé</span>
                                 @else
-                                    <span class="font-medium">{{ $project->end_date->diffInDays(now()) }}</span> jours restants
+                                    <span class="font-medium">{{ $project->daysLeft() }}</span> jours restants
                                 @endif
                             </div>
                         </div>

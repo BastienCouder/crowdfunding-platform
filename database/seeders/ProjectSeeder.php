@@ -161,13 +161,36 @@ class ProjectSeeder extends Seeder
                 'funding_tiers' => $projectData['funding_tiers'],
                 'faqs' => $projectData['faqs'],
             ]);
-
-            foreach ($projectData['images'] as $imageUrl) {
-                ProjectImage::create([
-                    'project_id' => $project->id,
-                    'image_url' => $imageUrl,
-                ]);
+        
+            foreach ($projectData['images'] as $index => $imageUrl) {
+                try {
+                    $imageContent = file_get_contents($imageUrl);
+                    if ($imageContent !== false) {
+                        $project->images()->create([
+                            'image_data' => $imageContent, // Store binary data directly
+                            'mime_type' => $this->guessMimeType($imageUrl),
+                            'is_main' => $index === 0
+                        ]);
+                    }
+                } catch (\Exception $e) {
+      
+                    continue;
+                }
             }
         }
+        
+    }
+
+    private function guessMimeType(string $url): string
+    {
+        $extension = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
+        
+        return match(strtolower($extension)) {
+            'jpg', 'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'gif' => 'image/gif',
+            'webp' => 'image/webp',
+            default => 'image/jpeg' // default
+        };
     }
 }

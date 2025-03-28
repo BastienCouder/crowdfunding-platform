@@ -199,83 +199,56 @@ class ProjectController extends Controller
         $project->delete();
         return redirect()->route('dashboard')->with('success', 'Projet supprimé avec succès !');
     }
-
     public function myProjects(Request $request)
-{
-    $query = Project::where('user_id', auth()->id())
-                ->with('category', 'contributions');
+    {
+        $user = auth()->user();
+        $query = $user->projects()->with(['category', 'images', 'contributions']);
     
-    // Filtre de recherche
-    if ($request->has('search') && $request->search) {
-        $query->where('title', 'like', '%' . $request->search . '%')
-              ->orWhere('description', 'like', '%' . $request->search . '%');
-    }
-    
-    // Filtre par statut
-    if ($request->has('status') && $request->status) {
-        switch ($request->status) {
-            case 'active':
-                $query->where('end_date', '>=', now())
-                      ->where('is_draft', false);
-                break;
-            case 'completed':
-                $query->where('end_date', '<', now());
-                break;
-            case 'draft':
-                $query->where('is_draft', true);
-                break;
+        // Appliquer les filtres
+        if ($request->has('search') && $request->search) {
+            $query->where(function($q) use ($request) {
+                $q->where('title', 'like', '%'.$request->search.'%')
+                  ->orWhere('description', 'like', '%'.$request->search.'%');
+            });
         }
-    }
     
-    // Filtre par catégorie
-    if ($request->has('category') && $request->category) {
-        $query->where('category_id', $request->category);
-    }
-    
-    // Tri
-    if ($request->has('sort') && $request->sort) {
-        switch ($request->sort) {
-            case 'newest':
-                $query->latest();
-                break;
-            case 'oldest':
-                $query->oldest();
-                break;
-            case 'amount-high':
-                $query->orderBy('current_amount', 'desc');
-                break;
-            case 'amount-low':
-                $query->orderBy('current_amount', 'asc');
-                break;
+        if ($request->has('status') && $request->status) {
+            switch ($request->status) {
+                case 'active':
+                    $query->where('is_draft', false)
+                          ->where('end_date', '>=', now());
+                    break;
+                case 'completed':
+                    $query->where('end_date', '<', now());
+                    break;
+                case 'draft':
+                    $query->where('is_draft', true);
+                    break;
+            }
         }
-    } else {
-        $query->latest();
+    
+        if ($request->has('category') && $request->category) {
+            $query->where('category_id', $request->category);
+        }
+    
+        // Appliquer le tri
+        switch ($request->sort ?? 'newest') {
+            case 'newest': $query->latest(); break;
+            case 'oldest': $query->oldest(); break;
+            case 'amount-high': $query->orderBy('current_amount', 'desc'); break;
+            case 'amount-low': $query->orderBy('current_amount', 'asc'); break;
+        }
+    
+        $projects = $query->paginate(10);
+        $categories = Category::all();
+    
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('projects.partials.projects-grid', compact('projects'))->render(),
+                'pagination' => $projects->links()->toHtml()
+            ]);
+        }
+    
+        return view('projects.my-projects', compact('projects', 'categories'));
     }
-    
-    $projects = $query->paginate(10);
-    $categories = Category::all();
-    
-    // Données pour les graphiques
-    $collectionsChart = [
-        'labels' => ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
-        'data' => [1000, 2000, 1500, 3000, 2500, 4000]
-    ];
-    
-    $categoriesChart = [
-        'labels' => $categories->pluck('name'),
-        'data' => $categories->map(function($category) {
-            return rand(500, 5000);
-        })
-    ];
-    
-    if ($request->ajax()) {
-        return response()->json([
-            'table' => view('projects.partials.projects-table', compact('projects'))->render(),
-            'pagination' => $projects->links()->toHtml()
-        ]);
-    }
-    
-    return view('projects.my-projects', compact('projects', 'categories', 'collectionsChart', 'categoriesChart'));
-}
-   
 }

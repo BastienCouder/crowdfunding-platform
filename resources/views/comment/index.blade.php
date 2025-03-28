@@ -30,7 +30,7 @@
                     </div>
                     <div class="ml-4">
                         <h2 class="text-sm font-medium text-gray-500">Total des commentaires</h2>
-                        <p class="text-2xl font-bold text-gray-900">{{ $totalComments ?? 0 }}</p>
+                        <p class="text-2xl font-bold text-gray-900" data-stat="total-comments">{{ $totalComments ?? 0 }}</p>
                     </div>
                 </div>
             </div>
@@ -45,7 +45,7 @@
                     </div>
                     <div class="ml-4">
                         <h2 class="text-sm font-medium text-gray-500">Projets commentés</h2>
-                        <p class="text-2xl font-bold text-gray-900">{{ $commentedProjects ?? 0 }}</p>
+                        <p class="text-2xl font-bold text-gray-900" data-stat="commented-projects">{{ $commentedProjects ?? 0 }}</p>
                     </div>
                 </div>
             </div>
@@ -60,7 +60,7 @@
                     </div>
                     <div class="ml-4">
                         <h2 class="text-sm font-medium text-gray-500">Réponses reçues</h2>
-                        <p class="text-2xl font-bold text-gray-900">{{ $receivedReplies ?? 0 }}</p>
+                        <p class="text-2xl font-bold text-gray-900" data-stat="received-replies">{{ $receivedReplies ?? 0 }}</p>
                     </div>
                 </div>
             </div>
@@ -80,12 +80,12 @@
                     </div>
                 </div>
                 <div class="flex flex-wrap gap-2">
-                    <select id="project-filter" class="border border-gray-200 rounded-lg px-3 py-2 focus:ring-lime-500 focus:border-lime-500">
-                        <option value="">Tous les projets</option>
-                        @foreach($projects ?? [] as $project)
-                            <option value="{{ $project->id }}">{{ $project->title }}</option>
-                        @endforeach
-                    </select>
+                <x-searchable-select id="project-filter" name="project_filter" placeholder="Tous les projets" searchPlaceholder="Rechercher un projet...">
+                      <option value="">Tous les projets</option>
+                      @foreach($projects ?? [] as $project)
+                          <option value="{{ $project->id }}">{{ $project->title }}</option>
+                      @endforeach
+                  </x-searchable-select>
                     <select id="date-filter" class="border border-gray-200 rounded-lg px-3 py-2 focus:ring-lime-500 focus:border-lime-500">
                         <option value="">Toutes les dates</option>
                         <option value="this-week">Cette semaine</option>
@@ -106,103 +106,7 @@
         <!-- Liste des commentaires -->
         <div class="space-y-6 mb-8">
             @if(count($comments ?? []) > 0)
-                @foreach($comments as $comment)
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                        <div class="p-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10">
-                                        @if($comment->project->images && count($comment->project->images) > 0)
-                                            <img class="h-10 w-10 rounded-lg object-cover" src="{{ $comment->project->images[0]->image_url }}" alt="{{ $comment->project->title }}">
-                                        @else
-                                            <div class="h-10 w-10 rounded-lg bg-gray-200 flex items-center justify-center">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-400">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                                                </svg>
-                                            </div>
-                                        @endif
-                                    </div>
-                                    <div class="ml-4">
-                                        <a href="{{ route('projects.show', $comment->project) }}" class="text-sm font-medium text-gray-900 hover:text-lime-600">{{ $comment->project->title }}</a>
-                                        <div class="text-xs text-gray-500">{{ $comment->created_at->format('d/m/Y à H:i') }}</div>
-                                    </div>
-                                </div>
-                                <div class="flex space-x-2">
-                                    <button type="button" class="edit-comment-btn text-gray-500 hover:text-lime-600" data-comment-id="{{ $comment->id }}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                                        </svg>
-                                    </button>
-                                    <form action="{{ route('comments.destroy', $comment) }}" method="POST" class="inline-block">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-gray-500 hover:text-red-600" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?')">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                                            </svg>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                            
-                            <!-- Contenu du commentaire -->
-                            <div class="comment-content-{{ $comment->id }} mb-4">
-                                <p class="text-gray-700">{{ $comment->content }}</p>
-                            </div>
-                            
-                            <!-- Formulaire d'édition (caché par défaut) -->
-                            <div class="edit-form-{{ $comment->id }} hidden mb-4">
-                                <form action="{{ route('comments.update', $comment) }}" method="POST">
-                                    @csrf
-                                    @method('PUT')
-                                    <textarea name="content" rows="3" class="w-full border-gray-200 rounded-lg shadow-sm focus:border-lime-500 focus:ring-lime-500 mb-2">{{ $comment->content }}</textarea>
-                                    <div class="flex justify-end space-x-2">
-                                        <button type="button" class="cancel-edit-btn px-3 py-1.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50" data-comment-id="{{ $comment->id }}">Annuler</button>
-                                        <button type="submit" class="px-3 py-1.5 bg-lime-500 text-white rounded-lg hover:bg-lime-600">Enregistrer</button>
-                                    </div>
-                                </form>
-                            </div>
-                            
-                            <!-- Interactions -->
-                            <div class="flex items-center text-sm text-gray-500 space-x-4">
-                                <div class="flex items-center">
-                                    <button class="flex items-center text-gray-500 hover:text-lime-600">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.633 10.5c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75A2.25 2.25 0 0116.5 4.5c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23H5.904M14.25 9h2.25M5.904 18.75c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 01-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 10.203 4.167 9.75 5 9.75h1.053c.472 0 .745.556.5.96a8.958 8.958 0 00-1.302 4.665c0 1.194.232 2.333.654 3.375z" />
-                                        </svg>
-                                        {{ $comment->likes_count ?? 0 }}
-                                    </button>
-                                </div>
-                                <div class="flex items-center">
-                                    <button class="flex items-center text-gray-500 hover:text-lime-600">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
-                                        </svg>
-                                        {{ $comment->replies_count ?? 0 }} réponses
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <!-- Réponses (si présentes) -->
-                            @if(isset($comment->replies) && count($comment->replies) > 0)
-                                <div class="mt-4 pl-4 border-l-2 border-gray-100 space-y-4">
-                                    @foreach($comment->replies as $reply)
-                                        <div class="bg-gray-50 rounded-lg p-4">
-                                            <div class="flex items-center mb-2">
-                                                <img src="{{ $reply->user->avatar }}" alt="{{ $reply->user->name }}" class="w-8 h-8 rounded-full mr-2">
-                                                <div>
-                                                    <p class="text-sm font-medium text-gray-900">{{ $reply->user->name }}</p>
-                                                    <p class="text-xs text-gray-500">{{ $reply->created_at->format('d/m/Y à H:i') }}</p>
-                                                </div>
-                                            </div>
-                                            <p class="text-sm text-gray-700">{{ $reply->content }}</p>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                @endforeach
+                @include('comment.partials.comments-list')
                 
                 <!-- Pagination -->
                 <div class="mt-6">
@@ -274,7 +178,7 @@
                                         @if($project->end_date->isPast())
                                             <span class="text-red-500">Terminé</span>
                                         @else
-                                            {{ $project->end_date->diffInDays(now()) }} jours restants
+                                            {{ $project->daysLeft() }} jours restants
                                         @endif
                                     </span>
                                 </div>
@@ -298,60 +202,178 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Filtres
-        const searchInput = document.getElementById('search');
-        const projectFilter = document.getElementById('project-filter');
-        const dateFilter = document.getElementById('date-filter');
-        const sortBy = document.getElementById('sort-by');
-        
-        // Fonction pour appliquer les filtres
-        function applyFilters() {
-            // Ici, vous pourriez implémenter une logique AJAX pour filtrer les résultats
-            // sans recharger la page, ou rediriger vers une URL avec les paramètres de filtre
-            
-            const searchValue = searchInput.value;
-            const projectValue = projectFilter.value;
-            const dateValue = dateFilter.value;
-            const sortValue = sortBy.value;
-            
-            console.log('Filtres appliqués:', {
-                search: searchValue,
-                project: projectValue,
-                date: dateValue,
-                sort: sortValue
-            });
-            
-            // Exemple de redirection avec paramètres
-            // window.location.href = `{{ route('comments.index') }}?search=${searchValue}&project=${projectValue}&date=${dateValue}&sort=${sortValue}`;
-        }
-        
-        // Ajouter des écouteurs d'événements
-        searchInput.addEventListener('input', applyFilters);
-        projectFilter.addEventListener('change', applyFilters);
-        dateFilter.addEventListener('change', applyFilters);
-        sortBy.addEventListener('change', applyFilters);
-        
-        // Gestion de l'édition des commentaires
-        const editButtons = document.querySelectorAll('.edit-comment-btn');
-        const cancelButtons = document.querySelectorAll('.cancel-edit-btn');
-        
-        editButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const commentId = this.getAttribute('data-comment-id');
-                document.querySelector(`.comment-content-${commentId}`).classList.add('hidden');
-                document.querySelector(`.edit-form-${commentId}`).classList.remove('hidden');
-            });
+  document.addEventListener('DOMContentLoaded', function() {
+    
+    const searchInput = document.getElementById('search');
+    const projectFilter = document.getElementById('project-filter');
+    const dateFilter = document.getElementById('date-filter');
+    const sortBy = document.getElementById('sort-by');
+    const commentsContainer = document.querySelector('.space-y-6');
+    const paginationContainer = document.querySelector('.mt-6');
+    const statsElements = {
+        totalComments: document.querySelector('[data-stat="total-comments"]'),
+        commentedProjects: document.querySelector('[data-stat="commented-projects"]'),
+        receivedReplies: document.querySelector('[data-stat="received-replies"]')
+    };
+    
+    let timer;
+    const debounceTime = 500;
+
+    function loadComments() {
+        const filters = {
+            search: searchInput.value,
+            project: projectFilter.value,
+            date: dateFilter.value,
+            sort: sortBy.value
+        };
+
+        // Construire les paramètres URL
+        const params = new URLSearchParams();
+        Object.entries(filters).forEach(([key, value]) => {
+            if (value) params.append(key, value);
         });
-        
-        cancelButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const commentId = this.getAttribute('data-comment-id');
-                document.querySelector(`.comment-content-${commentId}`).classList.remove('hidden');
-                document.querySelector(`.edit-form-${commentId}`).classList.add('hidden');
-            });
+
+        // Mettre à jour l'URL
+        const newUrl = `${window.location.pathname}?${params.toString()}`;
+        window.history.pushState({}, '', newUrl);
+
+        // Envoyer la requête AJAX
+        fetch(`${window.location.pathname}?${params.toString()}&ajax=1`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            if (commentsContainer) {
+                commentsContainer.innerHTML = data.comments;
+            }
+            if (paginationContainer) {
+                paginationContainer.innerHTML = data.pagination;
+            }
+            if (statsElements.totalComments) {
+                statsElements.totalComments.textContent = data.stats.totalComments;
+            }
+            if (statsElements.commentedProjects) {
+                statsElements.commentedProjects.textContent = data.stats.commentedProjects;
+            }
+            if (statsElements.receivedReplies) {
+                statsElements.receivedReplies.textContent = data.stats.receivedReplies;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading comments:', error);
+        });
+    }
+
+    // Écouteurs d'événements
+    [searchInput, projectFilter, dateFilter, sortBy].forEach(element => {
+        element?.addEventListener('change', function() {
+            clearTimeout(timer);
+            timer = setTimeout(loadComments, debounceTime);
         });
     });
+
+    searchInput?.addEventListener('input', function() {
+        clearTimeout(timer);
+        timer = setTimeout(loadComments, debounceTime);
+    });
+
+    // Gestion de l'édition des commentaires
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.edit-comment-btn')) {
+            const commentId = e.target.closest('.edit-comment-btn').getAttribute('data-comment-id');
+            document.querySelector(`.comment-content-${commentId}`).classList.add('hidden');
+            document.querySelector(`.edit-form-${commentId}`).classList.remove('hidden');
+        }
+        
+        if (e.target.closest('.cancel-edit-btn')) {
+            const commentId = e.target.closest('.cancel-edit-btn').getAttribute('data-comment-id');
+            document.querySelector(`.comment-content-${commentId}`).classList.remove('hidden');
+            document.querySelector(`.edit-form-${commentId}`).classList.add('hidden');
+        }
+    });
+
+    if (projectFilter) {
+        // Créez un input de recherche
+        const searchInput = document.createElement('input');
+        searchInput.type = 'text';
+        searchInput.placeholder = 'Rechercher un projet...';
+        searchInput.className = 'w-full border border-gray-200 rounded-lg px-3 py-2 mb-2 focus:ring-lime-500 focus:border-lime-500';
+        
+        // Insérez l'input avant le select
+        projectFilter.parentNode.insertBefore(searchInput, projectFilter);
+        
+        // Cachez le select original
+        projectFilter.style.display = 'none';
+        
+        // Créez un div pour les options
+        const optionsContainer = document.createElement('div');
+        optionsContainer.className = 'max-h-60 overflow-y-auto border border-gray-200 rounded-lg';
+        
+        // Remplissez les options
+        const options = Array.from(projectFilter.options).map(option => {
+            return {
+                value: option.value,
+                text: option.text,
+                element: option
+            };
+        });
+        
+        // Fonction pour filtrer les options
+        function filterOptions(searchTerm = '') {
+            optionsContainer.innerHTML = '';
+            const filtered = options.filter(option => 
+                option.text.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            
+            filtered.forEach(option => {
+                const div = document.createElement('div');
+                div.className = 'px-3 py-2 hover:bg-gray-100 cursor-pointer';
+                div.textContent = option.text;
+                div.addEventListener('click', () => {
+                    projectFilter.value = option.value;
+                    searchInput.value = option.text;
+                    optionsContainer.style.display = 'none';
+                    loadComments(); // Appel à votre fonction existante
+                });
+                optionsContainer.appendChild(div);
+            });
+            
+            if (filtered.length === 0) {
+                const div = document.createElement('div');
+                div.className = 'px-3 py-2 text-gray-500';
+                div.textContent = 'Aucun projet trouvé';
+                optionsContainer.appendChild(div);
+            }
+        }
+        
+        // Affichez initialement toutes les options
+        filterOptions();
+        
+        // Insérez le conteneur d'options
+        projectFilter.parentNode.insertBefore(optionsContainer, projectFilter.nextSibling);
+        
+        // Gestion de la recherche
+        searchInput.addEventListener('input', (e) => {
+            filterOptions(e.target.value);
+            optionsContainer.style.display = 'block';
+        });
+        
+        // Cacher quand on clique ailleurs
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.options-container') && e.target !== searchInput) {
+                optionsContainer.style.display = 'none';
+            }
+        });
+        
+        // Afficher au focus sur l'input
+        searchInput.addEventListener('focus', () => {
+            optionsContainer.style.display = 'block';
+        });
+    }
+});
 </script>
 </x-dashboard-sidebar>
 </x-app-layout>
