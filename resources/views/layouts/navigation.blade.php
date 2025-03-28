@@ -8,10 +8,11 @@
             <span class="ml-2 font-semibold text-lg">Fund</span>
         </a>
         <div class="hidden md:flex space-x-8">
-            <a href="#" class="text-gray-800 hover:text-gray-600">Accueil</a>
-            <a href="#" class="text-gray-800 hover:text-gray-600">Dons</a>
-            <a href="#" class="text-gray-800 hover:text-gray-600">Fonctionnement</a>
-            <a href="#" class="text-gray-800 hover:text-gray-600">À propos</a>
+            <a href="{{ route('welcome') }}" class="text-gray-800 hover:text-gray-600">Accueil</a>
+            <a href="{{ route('projects.index') }}" class="text-gray-800 hover:text-gray-600">Projets</a>
+            <a href="{{ route('how-it-works') }}" class="text-gray-800 hover:text-gray-600">Fonctionnement</a>
+            <a href="{{ route('about') }}" class="text-gray-800 hover:text-gray-600">À propos</a>
+            <a href="{{ route('faq') }}" class="text-gray-800 hover:text-gray-600">FAQ</a>      
         </div>
     </div>
     @auth

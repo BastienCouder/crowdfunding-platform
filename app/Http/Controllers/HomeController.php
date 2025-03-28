@@ -21,6 +21,21 @@ class HomeController extends Controller
         return view('welcome', compact('endingSoonProjects'));
     }
 
+    public function about()
+    {
+        return view('about');
+    }
+
+    public function howItWorks()
+    {
+        return view('how-it-works');
+    }
+
+    public function faq()
+    {
+        return view('faq');
+    }
+
     public function index(Request $request)
     {
         $user = auth()->user();

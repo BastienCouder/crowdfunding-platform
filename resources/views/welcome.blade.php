@@ -197,6 +197,7 @@
             </div>
         </div>
     </section>
+    @include('layouts.footer')
 
     <!-- Script JavaScript pour la FAQ -->
     <script>

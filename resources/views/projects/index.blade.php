@@ -19,6 +19,10 @@
             <div class="absolute right-0 bottom-0 w-48 h-48 bg-lime-50 rounded-full translate-x-1/3 translate-y-1/3 opacity-50"></div>
         </div>
 
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            @include('partials.filters')
+        </div>
+
         <!-- Projects Grid -->
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -102,5 +106,87 @@
             </div>
         </div>
     </div>
+    @include('layouts.footer')
 </x-app-layout>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Éléments du DOM avec des vérifications de null
+    const searchInput = document.getElementById('search');
+    const statusFilter = document.getElementById('status-filter');
+    const categoryFilter = document.getElementById('category-filter');
+    const sortBy = document.getElementById('sort-by');
+    const projectsGrid = document.querySelector('.grid.grid-cols-1');
+    const paginationContainer = document.querySelector('.mt-12');
+    const emptyState = document.querySelector('.text-center.py-16');
+    
+    // Vérifier que les éléments existent avant de continuer
+    if (!searchInput || !statusFilter || !categoryFilter || !sortBy || !projectsGrid) {
+        console.error('Un ou plusieurs éléments du filtre sont introuvables');
+        return;
+    }
+
+    // Fonction pour charger les projets via AJAX
+    function loadProjects() {
+        const params = new URLSearchParams();
+        
+        if (searchInput.value) params.append('search', searchInput.value);
+        if (statusFilter.value) params.append('status', statusFilter.value);
+        if (categoryFilter.value) params.append('category', categoryFilter.value);
+        if (sortBy.value) params.append('sort', sortBy.value);
+        
+        // Mettre à jour l'URL sans recharger la page
+        const newUrl = `${window.location.pathname}?${params.toString()}`;
+        window.history.pushState({}, '', newUrl);
+        
+        fetch(`${window.location.pathname}?${params.toString()}&ajax=1`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            if (data.html) {
+                projectsGrid.innerHTML = data.html;
+            }
+            
+            if (paginationContainer && data.pagination) {
+                paginationContainer.innerHTML = data.pagination;
+            }
+            
+            // Afficher/masquer l'état vide
+            if (emptyState) {
+                if (data.html.includes('bg-white rounded-xl shadow-sm')) {
+                    emptyState.classList.add('hidden');
+                } else {
+                    emptyState.classList.remove('hidden');
+                }
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+    
+    // Écouteurs d'événements seulement si les éléments existent
+    [searchInput, statusFilter, categoryFilter, sortBy].forEach(element => {
+        if (element) {
+            element.addEventListener('change', loadProjects);
+        }
+    });
+    
+    // Recherche avec debounce pour éviter trop de requêtes
+    let searchTimer;
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(loadProjects, 500);
+        });
+    }
+    
+    // Chargement initial si des paramètres sont présents dans l'URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.toString() && urlParams.toString() !== 'ajax=1') {
+        loadProjects();
+    }
+});
+</script>

@@ -10,8 +10,12 @@ use App\Http\Controllers\MigrationCheckerController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'welcome'])->name('welcome');
-Route::get('/check-migrations', [MigrationCheckerController::class, 'updateMigrations']);
 
+Route::get('/about', [HomeController::class, 'about'])->name('about');
+
+Route::get('/how-it-works', [HomeController::class, 'howItWorks'])->name('how-it-works');
+
+Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');

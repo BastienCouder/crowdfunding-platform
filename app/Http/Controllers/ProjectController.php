@@ -10,10 +10,56 @@ use Intervention\Image\Facades\Image;
 
 class ProjectController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $projects = Project::with('user', 'category')->latest()->paginate(10);
-        return view('projects.index', compact('projects'));
+        $query = Project::with('user', 'category');
+    
+        // Appliquer les filtres
+        if ($request->has('search') && $request->search) {
+            $query->where(function($q) use ($request) {
+                $q->where('title', 'like', '%'.$request->search.'%')
+                  ->orWhere('description', 'like', '%'.$request->search.'%');
+            });
+        }
+    
+        if ($request->has('status') && $request->status) {
+            switch ($request->status) {
+                case 'active':
+                    $query->where('is_draft', false)
+                          ->where('end_date', '>=', now());
+                    break;
+                case 'completed':
+                    $query->where('end_date', '<', now());
+                    break;
+                case 'draft':
+                    $query->where('is_draft', true);
+                    break;
+            }
+        }
+    
+        if ($request->has('category') && $request->category) {
+            $query->where('category_id', $request->category);
+        }
+    
+        // Appliquer le tri
+        switch ($request->sort ?? 'newest') {
+            case 'newest': $query->latest(); break;
+            case 'oldest': $query->oldest(); break;
+            case 'amount-high': $query->orderBy('current_amount', 'desc'); break;
+            case 'amount-low': $query->orderBy('current_amount', 'asc'); break;
+        }
+    
+        $projects = $query->paginate(10);
+        $categories = Category::all();
+    
+        if ($request->ajax() || $request->has('ajax')) {
+            return response()->json([
+                'html' => view('projects.partials.projects-grid-website', compact('projects'))->render(),
+                'pagination' => $projects->links()->toHtml()
+            ]);
+        }
+    
+        return view('projects.index', compact('projects', 'categories'));
     }
 
     public function create()
