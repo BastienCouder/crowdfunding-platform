@@ -20,7 +20,7 @@
             Tableau de bord
         </a>
     @else
-        <a href="#" class="bg-lime-300 hover:bg-lime-400 text-gray-800 px-4 py-2 rounded-full text-sm font-medium">
+        <a href="{{ route('login')}}" class="bg-lime-300 hover:bg-lime-400 text-gray-800 px-4 py-2 rounded-full text-sm font-medium">
             Télécharger l'app
         </a>
     @endauth

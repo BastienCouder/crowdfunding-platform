@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'welcome'])->name('welcome');
 
+Route::get('/projets', [ProjectController::class, 'index'])->name('projects.index');
+
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 
 Route::get('/how-it-works', [HomeController::class, 'howItWorks'])->name('how-it-works');
@@ -33,7 +35,6 @@ Route::middleware('auth')->group(function () {
         Route::prefix('projets')->group(function () {
                
             Route::get('/my-projects', [ProjectController::class, 'myProjects'])->name('projects.my-projects');
-            Route::get('/', [ProjectController::class, 'index'])->name('projects.index');
             Route::get('/create', [ProjectController::class, 'create'])->name('projects.create');
             Route::post('/create/step1', [ProjectController::class, 'storeStep1'])->name('projects.store-step1');
             Route::get('/create/step2', [ProjectController::class, 'showStep2'])->name('projects.show-step2');
