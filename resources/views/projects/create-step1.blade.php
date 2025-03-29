@@ -1,7 +1,7 @@
-<x-app-layout>
+<x-dashboard>
     <x-dashboard-sidebar>       
         <div class="py-8">
-            <div class="max-w-4xl px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <!-- En-tête -->
                 <div class="mb-8">
                     <h1 class="text-2xl font-bold text-gray-900">Lancez votre projet</h1>
@@ -139,38 +139,6 @@
                             <p class="mt-1 text-xs text-gray-500">La durée recommandée est de 30 à 60 jours.</p>
                         </div>
                     </div>
-
-                    <!-- Image principale (aperçu) -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Image principale</label>
-                        <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-200 border-dashed rounded-lg">
-                            <div class="space-y-1 text-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto h-12 w-12 text-gray-400">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                                </svg>
-                                <div class="flex text-sm text-gray-600">
-                                    <label for="main_image" class="relative cursor-pointer bg-white rounded-md font-medium text-lime-600 hover:text-lime-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-lime-500">
-                                        <span>Télécharger une image</span>
-                                        <input id="main_image" name="main_image" type="file" class="sr-only" accept="image/*">
-                                    </label>
-                                    <p class="pl-1">ou glisser-déposer</p>
-                                </div>
-                                <p class="text-xs text-gray-500">PNG, JPG, GIF jusqu'à 10MB</p>
-                            </div>
-                        </div>
-                        <p class="mt-1 text-xs text-gray-500">Cette image sera utilisée comme aperçu de votre projet.</p>
-                    </div>
-
-                    <!-- Option pour enregistrer comme brouillon -->
-                    <div class="flex items-start">
-                        <div class="flex items-center h-5">
-                            <input id="is_draft" name="is_draft" type="checkbox" class="h-4 w-4 text-lime-600 border-gray-300 rounded focus:ring-lime-500" {{ old('is_draft') ? 'checked' : '' }}>
-                        </div>
-                        <div class="ml-3 text-sm">
-                            <label for="is_draft" class="font-medium text-gray-700">Enregistrer comme brouillon</label>
-                            <p class="text-gray-500">Votre projet ne sera pas visible publiquement tant que vous ne le publierez pas.</p>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Boutons d'action -->
@@ -289,5 +257,5 @@
 
 
 </x-dashboard-sidebar>
-</x-app-layout>
+</x-dashboard>
 

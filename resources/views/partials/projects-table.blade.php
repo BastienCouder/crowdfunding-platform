@@ -35,7 +35,7 @@
                                         <div class="flex items-center">
                                             <div class="flex-shrink-0 h-10 w-10">
                                                 @if ($project->images && count($project->images) > 0)
-                                                    <img class="h-10 w-10 rounded-lg object-cover" src="{{ $project->images[0]->image_url }}" alt="{{ $project->title }}">
+                                                    <img class="h-10 w-10 rounded-lg object-cover" src="{{ asset('storage/'. $project->images[0]->image_url) }}" alt="{{ $project->title }}">
                                                 @else
                                                     <div class="h-10 w-10 rounded-lg bg-gray-200 flex items-center justify-center">
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-400">

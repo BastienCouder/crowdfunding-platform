@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-dashboard>
     <x-dashboard-sidebar>
 <div class="py-8">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -202,7 +202,10 @@
                     <!-- Option pour enregistrer comme brouillon -->
                     <div class="flex items-start">
                         <div class="flex items-center h-5">
-                            <input id="is_draft" name="is_draft" type="checkbox" class="h-4 w-4 text-lime-600 border-gray-300 rounded focus:ring-lime-500" {{ old('is_draft') ? 'checked' : '' }}>
+                        <input type="hidden" name="is_draft" value="0">
+                        <input id="is_draft" name="is_draft" type="checkbox" value="1" 
+                               class="h-4 w-4 text-lime-600 border-gray-300 rounded focus:ring-lime-500" 
+                               {{ old('is_draft') ? 'checked' : '' }}>
                         </div>
                         <div class="ml-3 text-sm">
                             <label for="is_draft" class="font-medium text-gray-700">Enregistrer comme brouillon</label>
@@ -213,7 +216,7 @@
 
                 <!-- Boutons de navigation -->
                 <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
-                    <a href="{{ route('projects.create-step2') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-lime-500 transition-colors">
+                    <a href="{{ route('projects.show-step2') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-lime-500 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                         </svg>
@@ -314,6 +317,6 @@
     });
 </script>
 </x-dashboard-sidebar>
-</x-app-layout>
+</x-dashboard>
 
 

@@ -18,7 +18,7 @@ Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/how-it-works', [HomeController::class, 'howItWorks'])->name('how-it-works');
 
 Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
-
+Route::get('/faq/search', [FaqController::class, 'search'])->name('faq.search');
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
     
@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/create/step2', [ProjectController::class, 'showStep2'])->name('projects.show-step2');
             Route::post('/create/step2', [ProjectController::class, 'storeStep2'])->name('projects.store-step2');
             Route::get('/create/step3', [ProjectController::class, 'showStep3'])->name('projects.show-step3');
+            Route::post('/projects/step3', [ProjectController::class, 'storeStep3'])->name('projects.store-step3');
             Route::post('/', [ProjectController::class, 'store'])->name('projects.store');
             Route::get('/{project}', [ProjectController::class, 'show'])->name('projects.show');
             Route::get('/{project}/edit', [ProjectController::class, 'edit'])->name('projects.edit');

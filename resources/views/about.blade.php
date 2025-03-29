@@ -3,11 +3,21 @@
 @include('layouts.navigation')
     <section class="relative mb-12">
         <div class="relative rounded-lg mx-6 overflow-hidden">
-            <img src="{{ asset('images/hands.jpg') }}" alt="Notre équipe en action" class="w-full h-[220px] md:h-[300px] object-cover">
-            <div class="absolute inset-0 bg-gray-800/40"></div>
+        <picture>
+            <source srcset="{{ asset('images/hands.webp') }}" type="image/webp">
+            <source srcset="{{ asset('images/hands.jpg') }}" type="image/jpeg">
+            <img src="{{ asset('images/hands.jpg') }}" 
+                 alt="Mains qui se tendent les unes vers les autres" 
+                 loading="eager"
+                 width="1200"
+                 height="300"
+                 class="w-full h-[220px] md:h-[300px] object-cover"
+                 style="background: #e2e8f0">
+        </picture>
+        <div class="absolute inset-0 bg-gray-800/30"></div>
             <div class="absolute inset-0 flex flex-col justify-center px-8 md:px-12">
-                <h1 class="text-white text-4xl md:text-5xl font-bold mb-4">À propos de Fund</h1>
-                <p class="text-white text-xl md:text-2xl font-medium max-w-2xl">Nous construisons un avenir où chaque projet méritant trouve son financement.</p>
+                <h1 class="text-white text-3xl md:text-5xl font-bold mb-4">À propos de Fund</h1>
+                <p class="text-white text-lg md:text-2xl font-medium max-w-2xl">Nous construisons un avenir où chaque projet méritant trouve son financement.</p>
             </div>
         </div>
     </section>

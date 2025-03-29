@@ -115,7 +115,14 @@
             </button>
             
             <!-- En-tête de la barre supérieure -->
-            <div class="flex-1 px-4 flex justify-end">
+            <div class="flex-1 px-4 flex justify-end md:justify-between items-center">
+            <div class="hidden md:flex space-x-8">
+            <a href="{{ route('welcome') }}" class="text-gray-800 hover:text-gray-600">Accueil</a>
+            <a href="{{ route('projects.index') }}" class="text-gray-800 hover:text-gray-600">Projets</a>
+            <a href="{{ route('how-it-works') }}" class="text-gray-800 hover:text-gray-600">Fonctionnement</a>
+            <a href="{{ route('about') }}" class="text-gray-800 hover:text-gray-600">À propos</a>
+            <a href="{{ route('faq') }}" class="text-gray-800 hover:text-gray-600">FAQ</a>      
+        </div>
                 <div class="ml-4 flex items-center md:ml-6">
                     
                     <!-- Menu déroulant du profil -->

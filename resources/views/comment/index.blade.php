@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-dashboard>
     <x-dashboard-sidebar>
 <div class="py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -140,7 +140,7 @@
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-md">
                         <div class="relative">
                             @if($project->images && count($project->images) > 0)
-                                <img src="{{ $project->images[0]->image_url }}" alt="{{ $project->title }}" class="w-full h-48 object-cover">
+                                <img src="{{ asset('storage/'. $project->images[0]->image_url) }}" alt="{{ $project->title }}" class="w-full h-48 object-cover">
                             @else
                                 <div class="w-full h-48 bg-gray-100 flex items-center justify-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-gray-300">
@@ -376,5 +376,5 @@
 });
 </script>
 </x-dashboard-sidebar>
-</x-app-layout>
+</x-dashboard>
 

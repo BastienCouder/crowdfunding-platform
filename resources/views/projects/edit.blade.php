@@ -1,11 +1,14 @@
-<x-app-layout>
+<x-dashboard>
     <x-dashboard-sidebar>
 <div class="py-8">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- En-tête -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">Modifier votre projet</h1>
-            <p class="mt-2 text-gray-600">Mettez à jour les informations de votre projet</p>
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                    <div>
+                <h1 class="text-2xl font-bold text-gray-900">Modifier votre projet</h1>
+                <p class="mt-1 text-sm text-gray-500">Mettez à jour les informations de votre projet</p>
+       
+        </div>
         </div>
         
         <!-- Formulaire -->
@@ -156,7 +159,7 @@
                             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-4">
                                 @foreach($project->images as $image)
                                     <div class="relative group">
-                                        <img src="{{ $image->image_url }}" alt="Image du projet" class="w-full h-32 object-cover rounded-lg">
+                                    <img src="{{ asset('storage/'.$image->image_url) }}" alt="Image projet">
                                         <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
                                             <div class="flex space-x-2">
                                                 <button type="button" class="text-white bg-red-600 hover:bg-red-700 p-1 rounded-full" onclick="document.getElementById('delete-image-{{ $image->id }}').checked = true; this.closest('.relative').classList.add('opacity-50');">
@@ -249,7 +252,10 @@
                     <!-- Option pour enregistrer comme brouillon -->
                     <div class="flex items-start">
                         <div class="flex items-center h-5">
-                            <input id="is_draft" name="is_draft" type="checkbox" class="h-4 w-4 text-lime-600 border-gray-300 rounded focus:ring-lime-500" {{ old('is_draft', $project->is_draft) ? 'checked' : '' }}>
+                        <input type="hidden" name="is_draft" value="0">
+<input id="is_draft" name="is_draft" type="checkbox" value="1" 
+       class="h-4 w-4 text-lime-600 border-gray-300 rounded focus:ring-lime-500" 
+       {{ old('is_draft', $project->is_draft) ? 'checked' : '' }}>
                         </div>
                         <div class="ml-3 text-sm">
                             <label for="is_draft" class="font-medium text-gray-700">Enregistrer comme brouillon</label>
@@ -266,37 +272,44 @@
                         <p class="text-sm text-gray-500 mb-4">Définissez des objectifs intermédiaires pour votre projet.</p>
                         
                         <div id="funding-tiers" class="space-y-4">
-                            @if(isset($project->funding_tiers) && count($project->funding_tiers) > 0)
-                                @foreach($project->funding_tiers as $index => $tier)
-                                    <div class="funding-tier p-4 border border-gray-200 rounded-lg">
-                                        <div class="flex justify-between items-center mb-2">
-                                            <h4 class="text-sm font-medium text-gray-900">Palier {{ $index + 1 }}</h4>
-                                            @if($index > 0)
-                                                <button type="button" class="remove-tier text-xs text-red-600 hover:text-red-800">Supprimer</button>
-                                            @endif
-                                        </div>
-                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-2">
-                                            <div>
-                                                <label for="tier_amount_{{ $index }}" class="block text-xs font-medium text-gray-700 mb-1">Montant (€)</label>
-                                                <div class="relative rounded-lg">
-                                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                        <span class="text-gray-500 sm:text-xs">€</span>
-                                                    </div>
-                                                    <input type="number" name="tier_amount[]" id="tier_amount_{{ $index }}" value="{{ $tier->amount }}" class="w-full pl-7 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-lime-500 focus:border-lime-500 transition">
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label for="tier_title_{{ $index }}" class="block text-xs font-medium text-gray-700 mb-1">Titre</label>
-                                                <input type="text" name="tier_title[]" id="tier_title_{{ $index }}" value="{{ $tier->title }}" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-lime-500 focus:border-lime-500 transition">
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label for="tier_description_{{ $index }}" class="block text-xs font-medium text-gray-700 mb-1">Description</label>
-                                            <textarea name="tier_description[]" id="tier_description_{{ $index }}" rows="2" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-lime-500 focus:border-lime-500 transition">{{ $tier->description }}</textarea>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            @else
+                        @if(isset($project->funding_tiers) && count($project->funding_tiers) > 0)
+    @foreach($project->funding_tiers as $index => $tier)
+        <div class="funding-tier p-4 border border-gray-200 rounded-lg">
+            <div class="flex justify-between items-center mb-2">
+                <h4 class="text-sm font-medium text-gray-900">Palier {{ $index + 1 }}</h4>
+                @if($index > 0)
+                    <button type="button" class="remove-tier text-xs text-red-600 hover:text-red-800">Supprimer</button>
+                @endif
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-2">
+                <div>
+                    <label for="tier_amount_{{ $index }}" class="block text-xs font-medium text-gray-700 mb-1">Montant (€)</label>
+                    <div class="relative rounded-lg">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 sm:text-xs">€</span>
+                        </div>
+                        <input type="number" name="tier_amount[]" id="tier_amount_{{ $index }}" 
+       value="{{ is_array($tier) ? $tier['amount'] : $tier->amount }}" 
+       class="w-full pl-7 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-lime-500 focus:border-lime-500 transition">
+                    </div>
+                </div>
+                <div>
+                    <label for="tier_reward_{{ $index }}" class="block text-xs font-medium text-gray-700 mb-1">Récompense</label>
+                    <input type="text" name="tier_reward[]" id="tier_reward_{{ $index }}" 
+       value="{{ data_get($tier, 'reward', '') }}" 
+       class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-lime-500 focus:border-lime-500 transition">
+                </div>
+            </div>
+            <div>
+                <label for="tier_description_{{ $index }}" class="block text-xs font-medium text-gray-700 mb-1">Description (optionnel)</label>
+                <textarea name="tier_description[]" id="tier_description_{{ $index }}" rows="2" 
+          class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-lime-500 focus:border-lime-500 transition">
+    {{ data_get($tier, 'description', '') }}
+</textarea>
+            </div>
+        </div>
+    @endforeach
+@else
                                 <!-- Palier par défaut si aucun n'existe -->
                                 <div class="funding-tier p-4 border border-gray-200 rounded-lg">
                                     <div class="flex justify-between items-center mb-2">
@@ -349,12 +362,17 @@
                                             @endif
                                         </div>
                                         <div class="mb-2">
-                                            <label for="faq_question_{{ $index }}" class="block text-xs font-medium text-gray-700 mb-1">Question</label>
-                                            <input type="text" name="faq_question[]" id="faq_question_{{ $index }}" value="{{ $faq->question }}" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-lime-500 focus:border-lime-500 transition">
-                                        </div>
+    <label for="faq_question_{{ $index }}" class="block text-xs font-medium text-gray-700 mb-1">Question</label>
+    <input type="text" name="faq_question[]" id="faq_question_{{ $index }}" 
+           value="{{ is_array($faq) ? ($faq['question'] ?? '') : ($faq->question ?? '') }}" 
+           class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-lime-500 focus:border-lime-500 transition">
+</div>
                                         <div>
                                             <label for="faq_answer_{{ $index }}" class="block text-xs font-medium text-gray-700 mb-1">Réponse</label>
-                                            <textarea name="faq_answer[]" id="faq_answer_{{ $index }}" rows="2" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-lime-500 focus:border-lime-500 transition">{{ $faq->answer }}</textarea>
+                                            <textarea name="faq_answer[]" id="faq_answer_{{ $index }}" rows="2"
+          class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-lime-500 focus:border-lime-500 transition">
+    {{ is_array($faq) ? ($faq['answer'] ?? '') : ($faq->answer ?? '') }}
+</textarea>
                                         </div>
                                     </div>
                                 @endforeach
@@ -387,7 +405,7 @@
 
                 <!-- Boutons d'action -->
                 <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
-                    <a href="{{ route('projects.show', $project) }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-lime-500 transition-colors">
+                    <a href="{{ route('projects.my-projects', $project) }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-lime-500 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
                         </svg>
@@ -488,32 +506,35 @@
             tierCount++;
             
             const newTier = document.createElement('div');
-            newTier.className = 'funding-tier p-4 border border-gray-200 rounded-lg';
-            newTier.innerHTML = `
-                <div class="flex justify-between items-center mb-2">
-                    <h4 class="text-sm font-medium text-gray-900">Palier ${tierCount}</h4>
-                    <button type="button" class="remove-tier text-xs text-red-600 hover:text-red-800">Supprimer</button>
+newTier.className = 'funding-tier p-4 border border-gray-200 rounded-lg';
+newTier.innerHTML = `
+    <div class="flex justify-between items-center mb-2">
+        <h4 class="text-sm font-medium text-gray-900">Palier ${tierCount}</h4>
+        <button type="button" class="remove-tier text-xs text-red-600 hover:text-red-800">Supprimer</button>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-2">
+        <div>
+            <label for="tier_amount_${tierCount}" class="block text-xs font-medium text-gray-700 mb-1">Montant (€)</label>
+            <div class="relative rounded-lg">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500 sm:text-xs">€</span>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-2">
-                    <div>
-                        <label for="tier_amount_${tierCount}" class="block text-xs font-medium text-gray-700 mb-1">Montant (€)</label>
-                        <div class="relative rounded-lg">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <span class="text-gray-500 sm:text-xs">€</span>
-                            </div>
-                            <input type="number" name="tier_amount[]" id="tier_amount_${tierCount}" class="w-full pl-7 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-lime-500 focus:border-lime-500 transition" placeholder="0">
-                        </div>
-                    </div>
-                    <div>
-                        <label for="tier_title_${tierCount}" class="block text-xs font-medium text-gray-700 mb-1">Titre</label>
-                        <input type="text" name="tier_title[]" id="tier_title_${tierCount}" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-lime-500 focus:border-lime-500 transition" placeholder="Ex: Objectif supplémentaire">
-                    </div>
-                </div>
-                <div>
-                    <label for="tier_description_${tierCount}" class="block text-xs font-medium text-gray-700 mb-1">Description</label>
-                    <textarea name="tier_description[]" id="tier_description_${tierCount}" rows="2" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-lime-500 focus:border-lime-500 transition" placeholder="Ce que vous ferez si vous atteignez ce palier"></textarea>
-                </div>
-            `;
+                <input type="number" name="tier_amount[]" id="tier_amount_${tierCount}" 
+                       class="w-full pl-7 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-lime-500 focus:border-lime-500 transition">
+            </div>
+        </div>
+        <div>
+            <label for="tier_reward_${tierCount}" class="block text-xs font-medium text-gray-700 mb-1">Récompense</label>
+            <input type="text" name="tier_reward[]" id="tier_reward_${tierCount}" 
+                   class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-lime-500 focus:border-lime-500 transition">
+        </div>
+    </div>
+    <div>
+        <label for="tier_description_${tierCount}" class="block text-xs font-medium text-gray-700 mb-1">Description (optionnel)</label>
+        <textarea name="tier_description[]" id="tier_description_${tierCount}" rows="2" 
+                  class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-lime-500 focus:border-lime-500 transition"></textarea>
+    </div>
+`; 
             
             fundingTiersContainer.appendChild(newTier);
             
@@ -574,4 +595,4 @@
     });
 </script>
 </x-dashboard-sidebar>
-</x-app-layout>
+</x-dashboard>

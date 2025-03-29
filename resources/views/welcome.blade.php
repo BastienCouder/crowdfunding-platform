@@ -2,20 +2,30 @@
     @include('layouts.navigation')
     <!-- Section Hero -->
     <section class="relative mb-12">
-        <div class="relative rounded-lg mx-6 overflow-hidden">
-            <img src="{{ asset('images/hands.jpg') }}" alt="Mains qui se tendent les unes vers les autres" class="w-full h-[220px] md:h-[300px] object-cover">
-            <div class="absolute inset-0 bg-gray-800/30"></div>
-            <div class="absolute inset-0 flex flex-col justify-center px-8 md:px-12">
-                <h1 class="text-white text-6xl md:text-7xl font-bold mb-1">Fund</h1>
-                <p class="text-white text-xl md:text-2xl font-medium mb-6">Aidez<br>les autres</p>
-                <div class="flex">
-                    <a href="#" class="bg-lime-300 hover:bg-lime-400 text-gray-800 px-4 py-2 rounded-full text-sm font-medium inline-block">
-                        Lancer une collecte
-                    </a>
-                </div>
+    <div class="relative rounded-lg mx-6 overflow-hidden">
+        <picture>
+            <source srcset="{{ asset('images/hands.webp') }}" type="image/webp">
+            <source srcset="{{ asset('images/hands.jpg') }}" type="image/jpeg">
+            <img src="{{ asset('images/hands.jpg') }}" 
+                 alt="Mains qui se tendent les unes vers les autres" 
+                 loading="eager"
+                 width="1200"
+                 height="300"
+                 class="w-full h-[220px] md:h-[300px] object-cover"
+                 style="background: #e2e8f0">
+        </picture>
+        <div class="absolute inset-0 bg-gray-800/30"></div>
+        <div class="absolute inset-0 flex flex-col justify-center px-8 md:px-12">
+            <h1 class="text-white text-6xl md:text-7xl font-bold mb-1">Fund</h1>
+            <p class="text-white text-xl md:text-2xl font-medium mb-6">Aidez<br>les autres</p>
+            <div class="flex">
+                <a href="#" class="bg-lime-300 hover:bg-lime-400 text-gray-800 px-4 py-2 rounded-full text-sm font-medium inline-block">
+                    Lancer une collecte
+                </a>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
     <!-- Section Rapide comme l'éclair -->
     <section class="px-6 mb-12">
@@ -109,18 +119,54 @@
     <section class="px-6 mb-12 text-center">
         <div class="relative py-12 px-4 max-w-4xl mx-auto">
             <!-- Images de fond -->
-            <div class="absolute left-0 top-1/4">
-                <img src="{{ asset('images/feuille.jpg') }}" alt="Collecteurs de fonds" class="w-28 h-28 hidden md:block object-cover rounded-lg">
-            </div>
-            <div class="absolute right-0 top-1/4">
-                <img src="{{ asset('images/bottle.jpg') }}" alt="Collecteurs de fonds" class="w-28 h-28 hidden md:block object-cover rounded-lg">
-            </div>
-            <div class="absolute left-28 bottom-0">
-                <img src="{{ asset('images/ampoule.jpg') }}" alt="Collecteurs de fonds" class="w-28 h-28 hidden md:block object-cover rounded-lg">
-            </div>
-            <div class="absolute right-28 bottom-0">
-                <img src="{{ asset('images/plant.jpg') }}" alt="Collecteurs de fonds" class="w-28 h-28 hidden md:block object-cover rounded-lg">
-            </div>
+           <!-- Images de fond optimisées -->
+<picture class="absolute left-0 top-1/4 w-28 h-28 hidden md:block">
+    <source srcset="{{ asset('images/feuille.webp') }}" type="image/webp">
+    <source srcset="{{ asset('images/feuille.jpg') }}" type="image/jpeg">
+    <img src="{{ asset('images/feuille.jpg') }}" 
+         alt="Collecteurs de fonds" 
+         loading="lazy"
+         width="112"
+         height="112"
+         class="w-full h-full object-cover rounded-lg"
+         style="background: #e2e8f0">
+</picture>
+
+<picture class="absolute right-0 top-1/4 w-28 h-28 hidden md:block">
+    <source srcset="{{ asset('images/bottle.webp') }}" type="image/webp">
+    <source srcset="{{ asset('images/bottle.jpg') }}" type="image/jpeg">
+    <img src="{{ asset('images/bottle.jpg') }}" 
+         alt="Collecteurs de fonds" 
+         loading="lazy"
+         width="112"
+         height="112"
+         class="w-full h-full object-cover rounded-lg"
+         style="background: #e2e8f0">
+</picture>
+
+<picture class="absolute left-28 bottom-0 w-28 h-28 hidden md:block">
+    <source srcset="{{ asset('images/ampoule.webp') }}" type="image/webp">
+    <source srcset="{{ asset('images/ampoule.jpg') }}" type="image/jpeg">
+    <img src="{{ asset('images/ampoule.jpg') }}" 
+         alt="Collecteurs de fonds" 
+         loading="lazy"
+         width="112"
+         height="112"
+         class="w-full h-full object-cover rounded-lg"
+         style="background: #e2e8f0">
+</picture>
+
+<picture class="absolute right-28 bottom-0 w-28 h-28 hidden md:block">
+    <source srcset="{{ asset('images/plant.webp') }}" type="image/webp">
+    <source srcset="{{ asset('images/plant.jpg') }}" type="image/jpeg">
+    <img src="{{ asset('images/plant.jpg') }}" 
+         alt="Collecteurs de fonds" 
+         loading="lazy"
+         width="112"
+         height="112"
+         class="w-full h-full object-cover rounded-lg"
+         style="background: #e2e8f0">
+</picture>
             
             <h2 class="text-xl font-bold mb-2">Faites partie des collectes avec plus de</h2>
             <div class="text-7xl font-bold mb-4">217 924</div>
@@ -131,95 +177,103 @@
         </div>
     </section>
 
-    <!-- Section FAQ -->
+    <!-- Section FAQ avec animations -->
     <section class="w-full px-6 flex flex-col items-center justify-center mb-16">
         <h2 class="text-2xl font-bold mb-8">Foire Aux Questions.</h2>
         
         <div class="space-y-4 w-full max-w-3xl">
-            <div class="border-b pb-4">
-                <div class="flex justify-between items-center cursor-pointer faq-toggle">
-                    <h3 class="font-medium">Comment puis-je faire un don ?</h3>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+            <!-- Question 1 -->
+            <div class="border-b pb-4 faq-item">
+                <div class="flex justify-between items-center cursor-pointer faq-header">
+                    <h3 class="font-medium group-hover:text-lime-600 transition-colors">Comment puis-je faire un don ?</h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-400 group-hover:text-lime-600 transition-colors">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
                 </div>
-                <div class="faq-content hidden mt-2 text-gray-600">
-                    <p>Vous pouvez faire un don en cliquant sur le bouton "Faire un don" sur la page de la campagne qui vous intéresse. Plusieurs méthodes de paiement sont disponibles.</p>
+                <div class="faq-content overflow-hidden max-h-0 transition-all duration-300">
+                    <p class="text-gray-600 pt-4">Vous pouvez faire un don en cliquant sur le bouton "Faire un don" sur la page de la campagne qui vous intéresse. Plusieurs méthodes de paiement sont disponibles.</p>
                 </div>
             </div>
             
-            <div class="border-b pb-4">
-                <div class="flex justify-between items-center cursor-pointer faq-toggle">
-                    <h3 class="font-medium">Mon don est-il déductible des impôts ?</h3>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+            <!-- Question 2 -->
+            <div class="border-b pb-4 faq-item">
+                <div class="flex justify-between items-center cursor-pointer faq-header">
+                    <h3 class="font-medium group-hover:text-lime-600 transition-colors">Mon don est-il déductible des impôts ?</h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-400 group-hover:text-lime-600 transition-colors">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
                 </div>
-                <div class="faq-content hidden mt-2 text-gray-600">
-                    <p>Oui, dans la plupart des cas, les dons effectués via notre plateforme sont déductibles des impôts. Vous recevrez un reçu fiscal par email après votre don.</p>
+                <div class="faq-content overflow-hidden max-h-0 transition-all duration-300">
+                    <p class="text-gray-600 pt-4">Oui, dans la plupart des cas, les dons effectués via notre plateforme sont déductibles des impôts. Vous recevrez un reçu fiscal par email après votre don.</p>
                 </div>
             </div>
             
-            <div class="border-b pb-4">
-                <div class="flex justify-between items-center cursor-pointer faq-toggle">
-                    <h3 class="font-medium">Puis-je faire un don en l'honneur ou à la mémoire de quelqu'un ?</h3>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+            <!-- Question 3 -->
+            <div class="border-b pb-4 faq-item">
+                <div class="flex justify-between items-center cursor-pointer faq-header">
+                    <h3 class="font-medium group-hover:text-lime-600 transition-colors">Puis-je faire un don en l'honneur ou à la mémoire de quelqu'un ?</h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-400 group-hover:text-lime-600 transition-colors">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
                 </div>
-                <div class="faq-content hidden mt-2 text-gray-600">
-                    <p>Absolument. Lors du processus de don, vous aurez la possibilité de dédier votre don à une personne spécifique. Nous pouvons également envoyer une notification à la personne honorée si vous le souhaitez.</p>
+                <div class="faq-content overflow-hidden max-h-0 transition-all duration-300">
+                    <p class="text-gray-600 pt-4">Absolument. Lors du processus de don, vous aurez la possibilité de dédier votre don à une personne spécifique. Nous pouvons également envoyer une notification à la personne honorée si vous le souhaitez.</p>
                 </div>
             </div>
             
-            <div class="border-b pb-4">
-                <div class="flex justify-between items-center cursor-pointer faq-toggle">
-                    <h3 class="font-medium">Comment mon don sera-t-il utilisé ?</h3>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+            <!-- Question 4 -->
+            <div class="border-b pb-4 faq-item">
+                <div class="flex justify-between items-center cursor-pointer faq-header">
+                    <h3 class="font-medium group-hover:text-lime-600 transition-colors">Comment mon don sera-t-il utilisé ?</h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-400 group-hover:text-lime-600 transition-colors">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
                 </div>
-                <div class="faq-content hidden mt-2 text-gray-600">
-                    <p>Les fonds collectés sont directement versés à l'organisme porteur de la campagne. Chaque campagne fournit des détails sur l'utilisation prévue des fonds sur sa page de description.</p>
+                <div class="faq-content overflow-hidden max-h-0 transition-all duration-300">
+                    <p class="text-gray-600 pt-4">Les fonds collectés sont directement versés à l'organisme porteur de la campagne. Chaque campagne fournit des détails sur l'utilisation prévue des fonds sur sa page de description.</p>
                 </div>
             </div>
             
-            <div class="border-b pb-4">
-                <div class="flex justify-between items-center cursor-pointer faq-toggle">
-                    <h3 class="font-medium">Puis-je mettre en place un don récurrent ?</h3>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+            <!-- Question 5 -->
+            <div class="border-b pb-4 faq-item">
+                <div class="flex justify-between items-center cursor-pointer faq-header">
+                    <h3 class="font-medium group-hover:text-lime-600 transition-colors">Puis-je mettre en place un don récurrent ?</h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-400 group-hover:text-lime-600 transition-colors">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
                 </div>
-                <div class="faq-content hidden mt-2 text-gray-600">
-                    <p>Oui, lors du processus de don, vous pouvez choisir l'option "Don mensuel" pour effectuer des dons récurrents. Vous pouvez modifier ou annuler cette option à tout moment depuis votre compte.</p>
+                <div class="faq-content overflow-hidden max-h-0 transition-all duration-300">
+                    <p class="text-gray-600 pt-4">Oui, lors du processus de don, vous pouvez choisir l'option "Don mensuel" pour effectuer des dons récurrents. Vous pouvez modifier ou annuler cette option à tout moment depuis votre compte.</p>
                 </div>
             </div>
         </div>
     </section>
-    @include('layouts.footer')
 
-    <!-- Script JavaScript pour la FAQ -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const faqToggles = document.querySelectorAll('.faq-toggle');
-            
-            faqToggles.forEach(toggle => {
-                toggle.addEventListener('click', function() {
-                    const content = this.nextElementSibling;
-                    const icon = this.querySelector('svg');
-                    
-                    // Basculer l'affichage du contenu
-                    content.classList.toggle('hidden');
-                    
-                    // Basculer l'icône entre + et -
-                    if (content.classList.contains('hidden')) {
-                        icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />';
-                    } else {
-                        icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" />';
-                    }
-                });
+<script>
+    // FAQ search functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        // FAQ accordion functionality
+        const faqHeaders = document.querySelectorAll('.faq-header');
+        
+        faqHeaders.forEach(header => {
+            header.addEventListener('click', function() {
+                const faqItem = this.closest('.faq-item');
+                const content = faqItem.querySelector('.faq-content');
+                const icon = this.querySelector('svg');
+                
+                // Toggle the active state
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                    icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />';
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                    icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" />';
+                }
             });
         });
-    </script>
+    });
+</script>
+
+    @include('partials.call-to-action')
+    @include('layouts.footer')
 </x-app-layout>

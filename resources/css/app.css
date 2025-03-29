@@ -36,4 +36,11 @@
     @apply text-gray-400 cursor-not-allowed hover:bg-white;
   }
   
-  
+  ::selection {
+    background-color: #1d9b4b;
+    color: white;
+  }
+  ::-moz-selection {
+    background-color: #1d9b4b;
+    color: white;
+  }

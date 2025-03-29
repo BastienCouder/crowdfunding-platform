@@ -4,9 +4,15 @@
     <!-- Hero Image Section -->
     <div class="relative">
         @if ($project->images && count($project->images) > 0)
-            <div class="h-96 w-full overflow-hidden">
-                <img src="{{ $project->images[0]->image_url }}" alt="{{ $project->title }}" class="w-full h-full object-cover">
-            </div>
+        <div class="h-96 w-full overflow-hidden">
+    @if(count($project->images) > 0)
+        <img src="{{ asset('storage/' . $project->images[0]->image_url) }}" alt="{{ $project->title }}" class="w-full h-full object-cover">
+    @else
+        <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+            <span class="text-gray-500">Aucune image disponible</span>
+        </div>
+    @endif
+</div>
         @else
             <div class="h-96 w-full bg-gray-100 flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 text-gray-300">
@@ -126,7 +132,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         @foreach($project->images as $image)
                             <div class="rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                                <img src="{{ $image->image_url }}" alt="Image du projet {{ $project->title }}" class="w-full h-48 object-cover">
+                                <img src="{{ asset('storage/' . $image->image_url) }}" alt="Image du projet {{ $project->title }}" class="w-full h-48 object-cover">
                             </div>
                         @endforeach
                     </div>
@@ -478,6 +484,7 @@
         </div>
     </div>
 </div>
+@include('layouts.footer')
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

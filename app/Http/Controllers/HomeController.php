@@ -33,7 +33,33 @@ class HomeController extends Controller
 
     public function faq()
     {
-        return view('faq');
+        if (request()->ajax()) {
+            $searchTerm = request('search');
+            
+            $results = \App\Models\Faq::where('question', 'like', '%'.$searchTerm.'%')
+                ->orWhere('answer', 'like', '%'.$searchTerm.'%')
+                ->get()
+                ->groupBy('category');
+                
+            return response()->json($results);
+        }
+        
+        // Récupération des données pour l'affichage initial
+        $categories = [
+            'general' => 'Questions générales',
+            'creators' => 'Pour les porteurs de projets', 
+            'contributors' => 'Pour les contributeurs',
+            'payments' => 'Paiements et sécurité',
+            'legal' => 'Aspects légaux et fiscaux'
+        ];
+        
+        $faqsByCategory = [];
+        
+        foreach ($categories as $key => $name) {
+            $faqsByCategory[$key] = \App\Models\Faq::where('category', $key)->get();
+        }
+        
+        return view('faq', compact('categories', 'faqsByCategory'));
     }
 
     public function index(Request $request)

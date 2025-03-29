@@ -8,7 +8,6 @@
             <span class="ml-2 font-semibold text-lg">Fund</span>
         </a>
         <div class="hidden md:flex space-x-8">
-            <a href="{{ route('welcome') }}" class="text-gray-800 hover:text-gray-600">Accueil</a>
             <a href="{{ route('projects.index') }}" class="text-gray-800 hover:text-gray-600">Projets</a>
             <a href="{{ route('how-it-works') }}" class="text-gray-800 hover:text-gray-600">Fonctionnement</a>
             <a href="{{ route('about') }}" class="text-gray-800 hover:text-gray-600">À propos</a>
@@ -21,7 +20,7 @@
         </a>
     @else
         <a href="{{ route('login')}}" class="bg-lime-300 hover:bg-lime-400 text-gray-800 px-4 py-2 rounded-full text-sm font-medium">
-            Télécharger l'app
+            Connexion
         </a>
     @endauth
 </nav>

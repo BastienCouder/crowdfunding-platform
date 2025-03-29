@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Str;
 
 class Project extends Model
 {
@@ -53,6 +54,7 @@ class Project extends Model
     {
         return $this->comments()->count();
     }
+
     // Accesseur pour les paliers de financement
     protected function fundingTiers(): Attribute
     {
@@ -106,20 +108,25 @@ public function daysLeft()
     return number_format(max(0, $days), 0); // Formatage sans décimales
 }
 
+
 public function storeImages(array $images)
 {
     foreach ($images as $image) {
-        // $image devrait être un tableau avec 'data' (base64) et 'is_main'
-        $base64 = $image['data'];
-        $isMain = $image['is_main'] ?? false;
-
-        // Extraire le type MIME et les données base64
-        [$mimeType, $imageData] = $this->parseBase64($base64);
-
+        // Convertir le base64 en fichier image
+        $imageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $image['data']));
+        
+        // Générer un nom de fichier unique
+        $filename = 'project_' . $this->id . '_' . Str::random(10) . '.jpg';
+        $path = 'project_images/' . $filename;
+        
+        // Stocker le fichier
+        Storage::disk('public')->put($path, $imageData);
+        
+        // Enregistrer en base
         $this->images()->create([
-            'image_data' => $imageData,
-            'mime_type' => $mimeType,
-            'is_main' => $isMain
+            'image_url' => $path,
+            'mime_type' => 'image/jpeg',
+            'is_main' => $image['is_main'] ?? false
         ]);
     }
 }

@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-dashboard>
     <x-dashboard-sidebar>
 <div class="py-8">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -166,52 +166,95 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Prévisualisation des images
-        const imageInputs = document.querySelectorAll('input[type="file"]');
-        
-        imageInputs.forEach(input => {
-            input.addEventListener('change', function(e) {
-                if (this.files && this.files[0]) {
-                    const container = this.closest('.image-upload-container');
-                    const previewContainer = container.querySelector('.preview-container');
-                    const dropZone = container.querySelector('.border-dashed');
-                    const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
-                        // Cacher la zone de dépôt
-                        dropZone.classList.add('hidden');
-                        
-                        // Afficher la prévisualisation
-                        previewContainer.classList.remove('hidden');
-                        previewContainer.innerHTML = '';
-                        
-                        // Créer l'élément d'image
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.classList.add('h-40', 'w-full', 'object-cover', 'rounded-lg');
-                        
-                        // Créer le bouton de suppression
-                        const removeBtn = document.createElement('button');
-                        removeBtn.type = 'button';
-                        removeBtn.classList.add('mt-1', 'text-xs', 'text-red-600', 'hover:text-red-800');
-                        removeBtn.textContent = 'Supprimer';
-                        removeBtn.addEventListener('click', function() {
-                            input.value = '';
-                            dropZone.classList.remove('hidden');
-                            previewContainer.classList.add('hidden');
-                        });
-                        
-                        // Ajouter les éléments à la prévisualisation
-                        previewContainer.appendChild(img);
-                        previewContainer.appendChild(removeBtn);
-                    };
-                    
-                    reader.readAsDataURL(this.files[0]);
+document.addEventListener('DOMContentLoaded', function() {
+    const imageInputs = document.querySelectorAll('input[type="file"]');
+    const maxFiles = 5;
+    let currentFileCount = 0;
+
+    imageInputs.forEach(input => {
+        input.addEventListener('change', function(e) {
+            if (this.files && this.files[0]) {
+                // Vérifier si on dépasse le nombre max de fichiers
+                if (currentFileCount >= maxFiles) {
+                    alert(`Vous ne pouvez pas ajouter plus de ${maxFiles} images`);
+                    this.value = '';
+                    return;
                 }
-            });
+
+                const container = this.closest('.image-upload-container');
+                const previewContainer = container.querySelector('.preview-container');
+                const dropZone = container.querySelector('.border-dashed');
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    // Cacher la zone de dépôt
+                    dropZone.classList.add('hidden');
+                    
+                    // Afficher la prévisualisation
+                    previewContainer.classList.remove('hidden');
+                    previewContainer.innerHTML = '';
+                    
+                    // Créer l'élément d'image
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.classList.add('h-40', 'w-full', 'object-cover', 'rounded-lg');
+                    
+                    // Créer le bouton de suppression
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.classList.add('mt-1', 'text-xs', 'text-red-600', 'hover:text-red-800');
+                    removeBtn.textContent = 'Supprimer';
+                    removeBtn.addEventListener('click', function() {
+                        input.value = '';
+                        dropZone.classList.remove('hidden');
+                        previewContainer.classList.add('hidden');
+                        currentFileCount--;
+                    });
+                    
+                    // Ajouter les éléments à la prévisualisation
+                    previewContainer.appendChild(img);
+                    previewContainer.appendChild(removeBtn);
+                    
+                    currentFileCount++;
+                };
+                
+                reader.readAsDataURL(this.files[0]);
+            }
         });
     });
+
+    // Gestion du drag and drop
+    const dropZones = document.querySelectorAll('.border-dashed');
+    
+    dropZones.forEach(zone => {
+        zone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            zone.classList.add('border-lime-500', 'bg-lime-50');
+        });
+        
+        zone.addEventListener('dragleave', () => {
+            zone.classList.remove('border-lime-500', 'bg-lime-50');
+        });
+        
+        zone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            zone.classList.remove('border-lime-500', 'bg-lime-50');
+            
+            if (currentFileCount >= maxFiles) {
+                alert(`Vous ne pouvez pas ajouter plus de ${maxFiles} images`);
+                return;
+            }
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type.match('image.*')) {
+                const input = zone.querySelector('input[type="file"]');
+                input.files = files;
+                const event = new Event('change');
+                input.dispatchEvent(event);
+            }
+        });
+    });
+});
 </script>
 </x-dashboard-sidebar>
-</x-app-layout>
+</x-dashboard>
