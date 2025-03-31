@@ -1,0 +1,61 @@
+---
+name: Deploy Laravel
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Create virtual environment
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          python -m pip install --upgrade pip
+
+      - name: Install Ansible and dependencies
+        run: |
+          source .venv/bin/activate
+          pip install ansible==8.6.1 ansible-lint
+
+      - name: Install HashiVault Collection
+        run: |
+          source .venv/bin/activate
+          ansible-galaxy collection install community.hashi_vault
+
+      - name: Validate playbook syntax
+        run: |
+          source .venv/bin/activate
+          ansible-playbook --syntax-check ansible/playbook-deploy.yml
+
+      - name: Verify Vault connection
+        env:
+          VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+        run: |
+          echo "Vérification de la connexion à Vault..."
+          curl -s "$VAULT_ADDR/v1/sys/health" || { echo "Erreur: Vault inaccessible"; exit 1; }
+
+      - name: Run Ansible deployment
+        env:
+          VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+          VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
+          ANSIBLE_FORCE_COLOR: 1
+        run: |
+          source .venv/bin/activate
+          echo "Lancement du déploiement Ansible..."
+          ansible-playbook -i ansible/inventory.ini ansible/playbook-deploy.yml \
+            -e "vault_addr=https://vault.example.com:8200" \
+            -e "vault_token=$VAULT_TOKEN" \
+            --tags nginx,app,certbot  

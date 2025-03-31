@@ -1,0 +1,7 @@
+---
+app_name: "crowdfunding"
+app_repo: "git@github.com:user/repo.git"
+app_branch: "main"
+app_root: "/var/www/{{ app_name }}"
+app_user: "www-data"
+php_version: "8.2"

@@ -1,0 +1,47 @@
+// ansible playbook
+ansible-playbook -i inventory.ini playbook-deploy.yml
+
+// ansible playbook with vault
+ansible-playbook -i inventory.ini playbook-deploy.yml --vault-password-file .vault_pass.txt
+
+// ansible playbook with vault and ask become pass
+ansible-playbook -i inventory.ini playbook-deploy.yml --ask-become-pass
+
+// Lancer le playbook en dry-run
+ansible-playbook playbook.yml --check --diff
+
+// create file
+ansible-vault create vars/secrets.yml
+
+// view file
+ansible-vault view vars/secrets.yml
+
+// encrypt file
+ansible-vault encrypt vars/secrets.yml
+
+// decrypt file
+ansible-vault decrypt vars/secrets.yml
+
+// file password
+.vault_pass.txt
+echo "mon_mot_de_passe_vault" > .vault_pass.txt
+
+//secure
+chmod 600 vars/secrets.yml
+
+
+// // Configure vault
+
+// install vault
+curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+sudo apt update && sudo apt install vault
+
+// install hashi_vault
+ansible-galaxy collection install community.hashi_vault
+
+
+//docker run --rm -it -v $(pwd):/ansible -w /ansible cytopia/ansible ansible-playbook -i ansible/inventory.ini ansible/playbook-deploy.yml \
+            -e "vault_addr=https://vault.example.com:8200" \
+            -e "vault_token=$VAULT_TOKEN" \
+            --tags nginx,app,certbot
