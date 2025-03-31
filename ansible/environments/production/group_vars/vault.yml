@@ -1,0 +1,3 @@
+secrets:
+  db_password: "P@ssw0rdProd123!"
+  app_key: "base64:xxxxxxxxPRODxxxxxx"

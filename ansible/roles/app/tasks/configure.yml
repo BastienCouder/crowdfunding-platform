@@ -1,5 +1,20 @@
 ---
-- name: Create application directory
+- name: Charger les secrets
+  include_vars:
+    file: "{{ playbook_dir }}/../environments/{{ env }}/group_vars/all/vault.yml"
+    name: secrets
+  no_log: true
+
+- name: Créer .env
+  template:
+    src: "{{ playbook_dir }}/../templates/laravel/.env.j2"
+    dest: "{{ app_root }}/.env"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: "0640"
+  no_log: true
+
+- name: Créer le répertoire de l'application
   file:
     path: "{{ app_root }}"
     state: directory
@@ -7,7 +22,7 @@
     group: "{{ app_user }}"
     mode: '0755'
 
-- name: Clone repository
+- name: Cloner le dépôt Git
   git:
     repo: "{{ app_repo }}"
     dest: "{{ app_root }}"
@@ -15,78 +30,63 @@
     depth: 1
     force: true
 
-- name: Install Composer dependencies
+- name: Installer les dépendances Composer
   composer:
     command: install
     working_dir: "{{ app_root }}"
     no_dev: false
 
-- name: "Récupérer les secrets depuis Vault"
-  community.hashi_vault.vault_kv2_get:
-    engine_mount_point: secret
-    path: "laravel/prod"
-    token: "{{ vault_token }}"
-  register: secrets
+- name: Créer le fichier .env
+  template:
+    src: "templates/laravel/.env.j2"
+    dest: "{{ app_root }}/.env"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: "0640"
   no_log: true
 
-- name: "Créer le fichier .env"
-  template:
-    src: "templates/env.j2"
-    dest: "/var/www/laravel/.env"
-    mode: "0640"
-    owner: "www-data"
-    group: "www-data"
-    vars:
-      db_password: "{{ secrets.secret.db_password }}"
-      app_key: "{{ secrets.secret.app_key }}"
-
-- name: Set permissions
+- name: Configurer les permissions du stockage
   file:
     path: "{{ app_root }}/storage"
     state: directory
     mode: '0775'
     recurse: true
 
-- name: Run database migrations
+- name: Exécuter les migrations (si demandé)
   command: php artisan migrate --force
   args:
     chdir: "{{ app_root }}"
   when: "'migrate' in ansible_run_tags"
 
-- name: Configure Nginx
-  template:
-    src: "laravel.conf.j2"
-    dest: "/etc/nginx/sites-available/{{ app_name }}.conf"
-  notify: reload nginx
+- name: Configuration Nginx
+  hosts: webservers
+  connection: local
+  become: true
+  tasks:
+    - name: Déployer la configuration Nginx
+      template:
+        src: "templates/nginx/laravel.conf.j2"
+        dest: "/etc/nginx/sites-available/{{ app_name }}.conf"
+      notify: reload nginx
 
-- name: Enable site
-  file:
-    src: "/etc/nginx/sites-available/{{ app_name }}.conf"
-    dest: "/etc/nginx/sites-enabled/{{ app_name }}.conf"
-    state: link
-    group: "{{ app_user }}"
+    - name: Activer le site
+      file:
+        src: "/etc/nginx/sites-available/{{ app_name }}.conf"
+        dest: "/etc/nginx/sites-enabled/{{ app_name }}.conf"
+        state: link
 
-- name: Set permissions
-  file:
-    path: "{{ app_root }}/storage"
-    state: directory
-    mode: '0775'
-    recurse: true
+- name: Configuration Certbot
+  hosts: certbot
+  connection: local
+  become: true
+  tasks:
+    - name: Installer les certificats SSL
+      include_role:
+        name: certbot
+      tags: certbot
 
-- name: Run database migrations
-  command: php artisan migrate --force
-  args:
-    chdir: "{{ app_root }}"
-  when: "'migrate' in ansible_run_tags"
-
-- name: Configure Nginx
-  template:
-    src: "laravel.conf.j2"
-    dest: "/etc/nginx/sites-available/{{ app_name }}.conf"
-  notify: reload nginx
-
-- name: Enable site
-  file:
-    src: "/etc/nginx/sites-available/{{ app_name }}.conf"
-    dest: "/etc/nginx/sites-enabled/{{ app_name }}.conf"
-    state: link
+  handlers:
+    - name: reload nginx
+      service:
+        name: nginx
+        state: reloaded

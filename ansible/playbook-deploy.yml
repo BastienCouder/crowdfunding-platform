@@ -1,41 +1,55 @@
 ---
-- name: Configuration du serveur
-  hosts: all
+- name: Chargement des configurations
+  hosts: localhost
   connection: local
-  become: true
-  vars_files:
-    - vars/defaults.yml
-    - vars/secrets.yml
-  pre_tasks:
-    - name: Vérifier la connexion à Vault
-      uri:
-        url: "{{ vault_addr }}/v1/sys/health"
-        method: GET
-      register: vault_status
-      until: vault_status.status == 200
-      retries: 3
-      delay: 5
+  tasks:
+    - name: Charger les variables d'environnement
+      include_vars:
+        file: "environments/{{ env }}/group_vars/all.yml"
+        name: config
 
-- name: Configurer nginx
+    - name: Charger les secrets
+      include_vars:
+        file: "environments/{{ env }}/group_vars/vault.yml"
+        name: secrets
+      no_log: true
+
+- name: Configuration de base
+  hosts: all
+  become: true
+  tasks:
+    - name: Vérifier les secrets requis
+      assert:
+        that:
+          - secrets.db_password is defined
+          - secrets.app_key is defined
+        msg: "Secrets manquants dans le vault.yml"
+      tags: always
+
+- name: Configuration Nginx
   hosts: webservers
-  connection: local
   become: true
   roles:
     - role: nginx
+      vars:
+        server_name: "{{ config.app_domain }}"
       tags: nginx
 
-- name: Déployer l'application
+- name: Déploiement application
   hosts: master
-  connection: local
   become: true
   roles:
     - role: app
+      vars:
+        db_password: "{{ secrets.db_password }}"
       tags: app
 
-- name: Configurer certbot
+- name: Configuration Certbot
   hosts: certbot
-  connection: local
   become: true
   roles:
     - role: certbot
+      vars:
+        email: "{{ config.admin_email }}"
+        domains: "{{ config.app_domain }}"
       tags: certbot

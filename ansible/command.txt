@@ -4,9 +4,33 @@ ansible-playbook -i inventory.ini playbook-deploy.yml
 // ansible playbook with vault
 ansible-playbook -i inventory.ini playbook-deploy.yml --vault-password-file .vault_pass.txt
 
-// ansible playbook with vault and ask become pass
-ansible-playbook -i inventory.ini playbook-deploy.yml --ask-become-pass
+// ansible playbook with vault and ask vault pass
+ansible-playbook -i inventory.ini playbook-deploy.yml --ask-vault-pass
 
+# Pour la production
+ansible-playbook -i environments/production/inventory playbook-deploy.yml -e "env=production" --ask-vault-pass
+
+# Pour le staging
+ansible-playbook -i environments/staging/inventory playbook-deploy.yml -e "env=staging" --ask-vault-pass
+
+
+ansible-vault create environments/production/group_vars/vault.yml
+ansible-vault create environments/staging/group_vars/vault.yml
+
+# Build production
+docker build -t myapp-ansible:prod -f Dockerfile.prod .
+
+# Build staging
+docker build -t myapp-ansible:staging -f Dockerfile.staging .
+
+# Production (mot de passe interactif)
+docker run -it -v $(pwd)/.vault-pass-prod:/ansible/.vault-pass myapp-ansible:prod
+
+# Staging (avec fichier de mot de passe)
+docker run -v $(pwd)/.vault-pass-staging:/ansible/.vault-pass:ro \
+  myapp-ansible:staging \
+  --vault-password-file /ansible/.vault-pass
+  
 // Lancer le playbook en dry-run
 ansible-playbook playbook.yml --check --diff
 
@@ -30,18 +54,13 @@ echo "mon_mot_de_passe_vault" > .vault_pass.txt
 chmod 600 vars/secrets.yml
 
 
-// // Configure vault
-
 // install vault
 curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
 sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys AA16FCBCA621E701
 sudo apt update && sudo apt install vault
 
-// install hashi_vault
-ansible-galaxy collection install community.hashi_vault
 
-
-//docker run --rm -it -v $(pwd):/ansible -w /ansible cytopia/ansible ansible-playbook -i ansible/inventory.ini ansible/playbook-deploy.yml \
-            -e "vault_addr=https://vault.example.com:8200" \
-            -e "vault_token=$VAULT_TOKEN" \
-            --tags nginx,app,certbot
+// Dockerfile
+docker build -t ansible-runner .
+docker run --rm ansible-runner
