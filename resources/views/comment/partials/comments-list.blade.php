@@ -50,7 +50,7 @@
                                     <textarea name="content" rows="3" class="w-full border-gray-200 rounded-lg shadow-sm focus:border-lime-500 focus:ring-lime-500 mb-2">{{ $comment->content }}</textarea>
                                     <div class="flex justify-end space-x-2">
                                         <button type="button" class="cancel-edit-btn px-3 py-1.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50" data-comment-id="{{ $comment->id }}">Annuler</button>
-                                        <button type="submit" class="px-3 py-1.5 bg-lime-500 text-white rounded-lg hover:bg-lime-600">Enregistrer</button>
+                                        <button type="submit" class="px-3 py-1.5 bg-lime-300 text-fg rounded-lg hover:bg-lime-400">Enregistrer</button>
                                     </div>
                                 </form>
                             </div>

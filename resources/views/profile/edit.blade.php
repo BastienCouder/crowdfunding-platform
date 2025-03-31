@@ -109,7 +109,7 @@
                             </div>
 
                             <div class="flex items-center gap-4">
-                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-lime-500 hover:bg-lime-600 text-white font-medium rounded-lg transition-colors shadow-sm">
+                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-lime-300 hover:bg-lime-400 text-fg font-medium rounded-lg transition-colors shadow-sm">
                                     {{ __('Enregistrer') }}
                                 </button>
 
@@ -160,7 +160,7 @@
                             </div>
                             
                             <div class="flex items-center gap-4">
-                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-lime-500 hover:bg-lime-600 text-white font-medium rounded-lg transition-colors shadow-sm">
+                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-lime-300 hover:bg-lime-400 text-fg font-medium rounded-lg transition-colors shadow-sm">
                                     {{ __('Mettre à jour') }}
                                 </button>
 

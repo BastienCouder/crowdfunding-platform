@@ -9,7 +9,7 @@
                 <p class="mt-1 text-sm text-gray-500">Suivez toutes vos contributions aux projets</p>
             </div>
             <div class="mt-4 md:mt-0">
-                <a href="{{ route('projects.index') }}" class="inline-flex items-center px-4 py-2 bg-lime-500 hover:bg-lime-600 text-white font-medium rounded-full transition-colors shadow-sm">
+                <a href="{{ route('projects.index') }}" class="inline-flex items-center px-4 py-2 bg-lime-300 hover:bg-lime-500 text-fg font-medium rounded-full transition-colors shadow-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z" />

@@ -9,7 +9,7 @@
                 <p class="mt-1 text-sm text-gray-500">Gérez tous vos projets de financement participatif</p>
             </div>
             <div class="mt-4 md:mt-0">
-                <a href="{{ route('projects.create') }}" class="inline-flex items-center px-4 py-2 bg-lime-500 hover:bg-lime-600 text-white font-medium rounded-full transition-colors shadow-sm">
+                <a href="{{ route('projects.create') }}" class="inline-flex items-center px-4 py-2 bg-lime-300 hover:bg-lime-400 text-fg font-medium rounded-full transition-colors shadow-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>

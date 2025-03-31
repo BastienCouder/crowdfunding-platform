@@ -38,7 +38,7 @@
                 <div class="border-b border-gray-100">
                     <div class="flex justify-between px-6 py-4">
                         <div class="flex items-center">
-                            <div class="flex items-center justify-center w-8 h-8 rounded-full bg-lime-500 text-white font-medium">1</div>
+                            <div class="flex items-center justify-center w-8 h-8 rounded-full bg-lime-300 text-fg font-medium">1</div>
                             <span class="ml-2 text-sm font-medium text-gray-900">Informations de base</span>
                         </div>
                         <div class="flex items-center text-gray-400">
@@ -149,7 +149,7 @@
                         </svg>
                         Annuler
                     </button>
-                    <button type="submit" class="inline-flex items-center px-6 py-3 bg-lime-500 text-white rounded-full text-sm font-semibold hover:bg-lime-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-lime-500 transition-colors shadow-sm">
+                    <button type="submit" class="inline-flex items-center px-6 py-3 bg-lime-300 text-fg rounded-full text-sm font-semibold hover:bg-lime-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-lime-500 transition-colors shadow-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>

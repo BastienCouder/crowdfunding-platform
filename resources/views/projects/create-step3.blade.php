@@ -46,7 +46,7 @@
                             <span class="ml-2 text-sm font-medium">Médias</span>
                         </div>
                         <div class="flex items-center">
-                            <div class="flex items-center justify-center w-8 h-8 rounded-full bg-lime-500 text-white font-medium">3</div>
+                            <div class="flex items-center justify-center w-8 h-8 rounded-full bg-lime-300 text-fg font-medium">3</div>
                             <span class="ml-2 text-sm font-medium text-gray-900">Finalisation</span>
                         </div>
                     </div>
@@ -222,7 +222,7 @@
                         </svg>
                         Précédent
                     </a>
-                    <button type="submit" class="inline-flex items-center px-6 py-3 bg-lime-500 text-white rounded-full text-sm font-semibold hover:bg-lime-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-lime-500 transition-colors shadow-sm">
+                    <button type="submit" class="inline-flex items-center px-6 py-3 bg-lime-300 text-fg rounded-full text-sm font-semibold hover:bg-lime-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-lime-500 transition-colors shadow-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>

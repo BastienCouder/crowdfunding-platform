@@ -36,7 +36,7 @@
                 </div>
             </div>
             
-            <a href="{{ route('projects.show', $project) }}" class="block w-full bg-lime-500 hover:bg-lime-600 text-white text-center py-3 rounded-lg transition duration-300 font-medium">
+            <a href="{{ route('projects.show', $project) }}" class="block w-full bg-lime-500 hover:bg-lime-600 text-fg text-center py-3 rounded-lg transition duration-300 font-medium">
                 Voir le projet
             </a>
         </div>
