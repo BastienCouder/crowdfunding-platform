@@ -1,0 +1,30 @@
+- name: Ensure /etc/apt/trusted.gpg.d directory exists
+  file:
+    path: /etc/apt/trusted.gpg.d
+    state: directory
+    mode: '0755'
+
+- name: Download Nginx GPG key
+  get_url:
+    url: https://nginx.org/keys/nginx_signing.key
+    dest: /etc/apt/trusted.gpg.d/nginx_signing.asc
+    mode: '0644'
+
+- name: Add Nginx repository
+  apt_repository:
+    repo: "deb http://nginx.org/packages/mainline/ubuntu {{ ansible_distribution_release }} nginx"
+    state: present
+    filename: nginx
+    update_cache: true
+
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+    update_cache: true
+
+- name: Verify Nginx configuration
+  command: nginx -t
+  register: nginx_test
+  changed_when: false
+  notify: Restart Nginx

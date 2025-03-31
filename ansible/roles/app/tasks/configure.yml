@@ -1,0 +1,92 @@
+---
+- name: Create application directory
+  file:
+    path: "{{ app_root }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: '0755'
+
+- name: Clone repository
+  git:
+    repo: "{{ app_repo }}"
+    dest: "{{ app_root }}"
+    version: "{{ app_branch }}"
+    depth: 1
+    force: true
+
+- name: Install Composer dependencies
+  composer:
+    command: install
+    working_dir: "{{ app_root }}"
+    no_dev: false
+
+- name: "Récupérer les secrets depuis Vault"
+  community.hashi_vault.vault_kv2_get:
+    engine_mount_point: secret
+    path: "laravel/prod"
+    token: "{{ vault_token }}"
+  register: secrets
+  no_log: true
+
+- name: "Créer le fichier .env"
+  template:
+    src: "templates/env.j2"
+    dest: "/var/www/laravel/.env"
+    mode: "0640"
+    owner: "www-data"
+    group: "www-data"
+    vars:
+      db_password: "{{ secrets.secret.db_password }}"
+      app_key: "{{ secrets.secret.app_key }}"
+
+- name: Set permissions
+  file:
+    path: "{{ app_root }}/storage"
+    state: directory
+    mode: '0775'
+    recurse: true
+
+- name: Run database migrations
+  command: php artisan migrate --force
+  args:
+    chdir: "{{ app_root }}"
+  when: "'migrate' in ansible_run_tags"
+
+- name: Configure Nginx
+  template:
+    src: "laravel.conf.j2"
+    dest: "/etc/nginx/sites-available/{{ app_name }}.conf"
+  notify: reload nginx
+
+- name: Enable site
+  file:
+    src: "/etc/nginx/sites-available/{{ app_name }}.conf"
+    dest: "/etc/nginx/sites-enabled/{{ app_name }}.conf"
+    state: link
+    group: "{{ app_user }}"
+
+- name: Set permissions
+  file:
+    path: "{{ app_root }}/storage"
+    state: directory
+    mode: '0775'
+    recurse: true
+
+- name: Run database migrations
+  command: php artisan migrate --force
+  args:
+    chdir: "{{ app_root }}"
+  when: "'migrate' in ansible_run_tags"
+
+- name: Configure Nginx
+  template:
+    src: "laravel.conf.j2"
+    dest: "/etc/nginx/sites-available/{{ app_name }}.conf"
+  notify: reload nginx
+
+- name: Enable site
+  file:
+    src: "/etc/nginx/sites-available/{{ app_name }}.conf"
+    dest: "/etc/nginx/sites-enabled/{{ app_name }}.conf"
+    state: link

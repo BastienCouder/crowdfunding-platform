@@ -1,0 +1,41 @@
+---
+- name: Configuration du serveur
+  hosts: all
+  connection: local
+  become: true
+  vars_files:
+    - vars/defaults.yml
+    - vars/secrets.yml
+  pre_tasks:
+    - name: Vérifier la connexion à Vault
+      uri:
+        url: "{{ vault_addr }}/v1/sys/health"
+        method: GET
+      register: vault_status
+      until: vault_status.status == 200
+      retries: 3
+      delay: 5
+
+- name: Configurer nginx
+  hosts: webservers
+  connection: local
+  become: true
+  roles:
+    - role: nginx
+      tags: nginx
+
+- name: Déployer l'application
+  hosts: master
+  connection: local
+  become: true
+  roles:
+    - role: app
+      tags: app
+
+- name: Configurer certbot
+  hosts: certbot
+  connection: local
+  become: true
+  roles:
+    - role: certbot
+      tags: certbot
