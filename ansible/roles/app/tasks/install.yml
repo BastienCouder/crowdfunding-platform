@@ -4,7 +4,7 @@
     update_cache: yes
     upgrade: dist
 
-- name: Add PHP repository (if needed)
+- name: Add PHP repository
   apt_repository:
     repo: "ppa:ondrej/php"
     state: present
