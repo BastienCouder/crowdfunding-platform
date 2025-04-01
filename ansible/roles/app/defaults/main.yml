@@ -1,7 +1,8 @@
 ---
 app_name: "crowdfunding"
-app_repo: "git@github.com:user/repo.git"
+app_repo: "git@github.com:BastienCouder/crowdfunding-platform.git"
 app_branch: "main"
 app_root: "/var/www/{{ app_name }}"
 app_user: "www-data"
 php_version: "8.2"
+app_group: "www-data"

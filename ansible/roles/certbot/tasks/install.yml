@@ -1,43 +1,16 @@
 ---
-
-- name: install Let's Encrypt Certbot client
-  apt:
-    pkg: certbot
+- name: Installer Certbot et le plugin Nginx
+  package:
+    name:
+      - certbot
+      - python3-certbot-nginx
     state: present
-  when: ansible_distribution == 'Debian'
-        or ansible_distribution == 'Ubuntu'
 
-- name: install Let's Encrypt Certbot client
-  yum:
-    pkg: certbot
-    state: present
-  when: ansible_distribution == 'CentOS'
-        or ansible_distribution == 'Red Hat Enterprise Linux'
+- name: Vérifier l'installation
+  command: certbot --version
+  register: certbot_version
+  changed_when: false
 
-- name: install certbot plugin 'apache' on webservers
-  apt:
-    pkg: python-certbot-apache
-    state: present
-  when: web_server == "apache" && ansible_distribution == 'Debian'
-        or ansible_distribution == 'Ubuntu'
-
-- name: install certbot plugin 'nginx' on webservers
-  apt:
-    pkg: python-certbot-nginx
-    state: present
-  when: web_server == "nginx" && ansible_distribution == 'Debian'
-        or ansible_distribution == 'Ubuntu'
-
-- name: install certbot plugin 'apache' on webservers
-  yum:
-    pkg: python-certbot-apache
-    state: present
-  when: web_server == "apache" && ansible_distribution == 'CentOS'
-        or ansible_distribution == 'Red Hat Enterprise Linux'
-
-- name: install certbot plugin 'nginx' on webservers
-  yum:
-    pkg: python-certbot-nginx
-    state: present
-  when: web_server == "nginx" && ansible_distribution == 'CentOS'
-        or ansible_distribution == 'Red Hat Enterprise Linux'
+- name: Afficher la version installée
+  debug:
+    msg: "Certbot {{ certbot_version.stdout }} installé avec succès"

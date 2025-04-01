@@ -1,9 +1,0 @@
-# Production Dockerfile
-FROM alpine/ansible:latest
-
-WORKDIR /ansible
-
-COPY ansible/ .
-
-ENTRYPOINT ["ansible-playbook", "playbook-deploy.yml"]
-CMD ["-i", "environments/production/inventory", "-e", "env=production", "--ask-vault-pass"]

@@ -5,5 +5,11 @@ rules:
   line-length:
     max: 153
     level: warning
-  truthy:
-    allowed-values: ['true', 'false', 'yes', 'no']
+  truthy: disable
+
+overrides:
+  group_vars/vault.yml:
+    rules:
+      document-start:
+        present: false
+      braces: disable

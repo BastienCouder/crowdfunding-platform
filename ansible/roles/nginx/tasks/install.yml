@@ -1,3 +1,4 @@
+---
 - name: Ensure /etc/apt/trusted.gpg.d directory exists
   file:
     path: /etc/apt/trusted.gpg.d

@@ -1,26 +1,26 @@
 ---
+- name: Vérifier l'existence du fichier vault
+  stat:
+    path: "../../group_vars/vault.yml"
+  register: vault_file
+
 - name: Charger les secrets
   include_vars:
-    file: "{{ playbook_dir }}/../environments/{{ env }}/group_vars/all/vault.yml"
+    file: "../../group_vars/vault.yml"
     name: secrets
   no_log: true
+  when: vault_file.stat.exists
 
-- name: Créer .env
-  template:
-    src: "{{ playbook_dir }}/../templates/laravel/.env.j2"
-    dest: "{{ app_root }}/.env"
-    owner: "{{ app_user }}"
-    group: "{{ app_group }}"
-    mode: "0640"
-  no_log: true
-
-- name: Créer le répertoire de l'application
+- name: Créer la structure de répertoires
   file:
-    path: "{{ app_root }}"
+    path: "{{ item }}"
     state: directory
     owner: "{{ app_user }}"
-    group: "{{ app_user }}"
+    group: "{{ app_group }}"
     mode: '0755'
+  loop:
+    - "{{ app_root }}"
+    - "{{ app_root }}/storage"
 
 - name: Cloner le dépôt Git
   git:
@@ -28,65 +28,53 @@
     dest: "{{ app_root }}"
     version: "{{ app_branch }}"
     depth: 1
-    force: true
-
-- name: Installer les dépendances Composer
-  composer:
-    command: install
-    working_dir: "{{ app_root }}"
-    no_dev: false
+    force: yes
+    register: git_result
+    retries: 3
+    delay: 10
+    until: git_result is succeeded
 
 - name: Créer le fichier .env
-  template:
-    src: "templates/laravel/.env.j2"
+  ansible.builtin.template:
+    src: "../templates/laravel/.env.j2"
     dest: "{{ app_root }}/.env"
     owner: "{{ app_user }}"
     group: "{{ app_group }}"
     mode: "0640"
   no_log: true
 
+- name: Installer les dépendances Composer
+  community.general.composer:
+    command: install
+    working_dir: "{{ app_root }}"
+    no_dev: false
+
 - name: Configurer les permissions du stockage
-  file:
+  ansible.builtin.file:
     path: "{{ app_root }}/storage"
     state: directory
     mode: '0775'
-    recurse: true
+    recurse: yes
 
 - name: Exécuter les migrations (si demandé)
-  command: php artisan migrate --force
+  ansible.builtin.command: php artisan migrate --force
   args:
     chdir: "{{ app_root }}"
   when: "'migrate' in ansible_run_tags"
 
-- name: Configuration Nginx
-  hosts: webservers
-  connection: local
-  become: true
-  tasks:
-    - name: Déployer la configuration Nginx
-      template:
-        src: "templates/nginx/laravel.conf.j2"
-        dest: "/etc/nginx/sites-available/{{ app_name }}.conf"
-      notify: reload nginx
+- name: Déployer la configuration Nginx
+  template:
+    src: "templates/nginx/laravel.conf.j2"
+    dest: "/etc/nginx/sites-available/{{ app_name }}.conf"
+  notify: reload nginx
 
-    - name: Activer le site
-      file:
-        src: "/etc/nginx/sites-available/{{ app_name }}.conf"
-        dest: "/etc/nginx/sites-enabled/{{ app_name }}.conf"
-        state: link
+- name: Activer le site
+  file:
+    src: "/etc/nginx/sites-available/{{ app_name }}.conf"
+    dest: "/etc/nginx/sites-enabled/{{ app_name }}.conf"
+    state: link
 
-- name: Configuration Certbot
-  hosts: certbot
-  connection: local
-  become: true
-  tasks:
-    - name: Installer les certificats SSL
-      include_role:
-        name: certbot
-      tags: certbot
-
-  handlers:
-    - name: reload nginx
-      service:
-        name: nginx
-        state: reloaded
+- name: Configurer SSL avec Certbot
+  include_role:
+    name: certbot
+  tags: certbot

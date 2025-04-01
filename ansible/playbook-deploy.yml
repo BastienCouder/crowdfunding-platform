@@ -1,55 +1,16 @@
 ---
-- name: Chargement des configurations
+- name: Déploiement local complet
   hosts: localhost
   connection: local
+  become: true
   tasks:
-    - name: Charger les variables d'environnement
-      include_vars:
-        file: "environments/{{ env }}/group_vars/all.yml"
-        name: config
-
-    - name: Charger les secrets
-      include_vars:
-        file: "environments/{{ env }}/group_vars/vault.yml"
+    - include_vars: group_vars/all.yml
+    - include_vars:
+        file: group_vars/vault.yml
         name: secrets
       no_log: true
 
-- name: Configuration de base
-  hosts: all
-  become: true
-  tasks:
-    - name: Vérifier les secrets requis
-      assert:
-        that:
-          - secrets.db_password is defined
-          - secrets.app_key is defined
-        msg: "Secrets manquants dans le vault.yml"
-      tags: always
-
-- name: Configuration Nginx
-  hosts: webservers
-  become: true
   roles:
-    - role: nginx
-      vars:
-        server_name: "{{ config.app_domain }}"
-      tags: nginx
-
-- name: Déploiement application
-  hosts: master
-  become: true
-  roles:
-    - role: app
-      vars:
-        db_password: "{{ secrets.db_password }}"
-      tags: app
-
-- name: Configuration Certbot
-  hosts: certbot
-  become: true
-  roles:
-    - role: certbot
-      vars:
-        email: "{{ config.admin_email }}"
-        domains: "{{ config.app_domain }}"
-      tags: certbot
+    - nginx
+    - certbot
+    - app

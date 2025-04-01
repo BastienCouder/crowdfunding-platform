@@ -5,4 +5,4 @@ WORKDIR /ansible
 COPY ansible/ .
 
 ENTRYPOINT ["ansible-playbook", "playbook-deploy.yml"]
-CMD ["-i", "environments/staging/inventory", "-e", "env=staging", "--ask-vault-pass"]
+CMD ["-i", "inventory", "--ask-vault-pass"]

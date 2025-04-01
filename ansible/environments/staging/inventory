@@ -1,9 +1,0 @@
-[webservers]
-staging-web1.example.com
-staging-web2.example.com
-
-[master]
-staging-app.example.com
-
-[certbot]
-staging-web1.example.com

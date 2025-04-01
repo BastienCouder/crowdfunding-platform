@@ -1,24 +1,19 @@
 ---
+- name: Vérifier si Nginx est installé
+  stat:
+    path: /usr/sbin/nginx
+  register: nginx_installed
 
-- name: get and install your certificates for {{ web_server }}
-  shell: echo 'y' | bash -c
-    'certbot --{{ web_server }}
-    --noninteractive
-    --agree-tos
-    --redirect
-    --email {{ certbot_email }}
-    -d {{ domain_name }}'
+- name: Obtenir le certificat Certbot
+  command: >
+    certbot --nginx --noninteractive --agree-tos --redirect
+    --email {{ certbot_email }} -d {{ domain_name }}
+  when: nginx_installed.stat.exists
+  register: certbot_result
+  changed_when: "'Congratulations' in certbot_result.stdout"
 
-- name: ensure nginx service is restarted
+- name: Redémarrer Nginx si installé
   service:
     name: nginx
     state: restarted
-  changed_when: false
-  when: web_server == "nginx"
-
-- name: ensure apache service is restarted
-  service:
-    name: apache2
-    state: restarted
-  changed_when: false
-  when: web_server == "apache"
+  when: nginx_installed.stat.exists

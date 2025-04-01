@@ -8,31 +8,18 @@ ansible-playbook -i inventory.ini playbook-deploy.yml --vault-password-file .vau
 ansible-playbook -i inventory.ini playbook-deploy.yml --ask-vault-pass
 
 # Pour la production
-ansible-playbook -i environments/production/inventory playbook-deploy.yml -e "env=production" --ask-vault-pass
+ansible-playbook -i inventory playbook-deploy.yml --ask-vault-pass
 
-# Pour le staging
-ansible-playbook -i environments/staging/inventory playbook-deploy.yml -e "env=staging" --ask-vault-pass
-
-
-ansible-vault create environments/production/group_vars/vault.yml
-ansible-vault create environments/staging/group_vars/vault.yml
+ansible-vault create group_vars/vault.yml
 
 # Build production
 docker build -t myapp-ansible:prod -f Dockerfile.prod .
 
-# Build staging
-docker build -t myapp-ansible:staging -f Dockerfile.staging .
-
 # Production (mot de passe interactif)
 docker run -it -v $(pwd)/.vault-pass-prod:/ansible/.vault-pass myapp-ansible:prod
 
-# Staging (avec fichier de mot de passe)
-docker run -v $(pwd)/.vault-pass-staging:/ansible/.vault-pass:ro \
-  myapp-ansible:staging \
-  --vault-password-file /ansible/.vault-pass
-  
 // Lancer le playbook en dry-run
-ansible-playbook playbook.yml --check --diff
+ansible-playbook playbook-deploy.yml --check --diff
 
 // create file
 ansible-vault create vars/secrets.yml
