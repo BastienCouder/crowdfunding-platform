@@ -1,0 +1,37 @@
+---
+name: Remote Server Command Execution
+
+on: [push, workflow_dispatch]
+
+jobs:
+  remote-ssh:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH Agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          ssh-keyscan -H 51.75.18.60 >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Test Connection
+        run: ssh -o StrictHostKeyChecking=no debian@51.75.18.60 "echo 'SSH Connection Successful!'"
+
+      - name: Execute Remote Commands
+        run: |
+          ssh debian@51.75.18.60 '
+            echo "Current directory: $(pwd)"
+            echo "Disk space:"
+            df -h
+            echo "Running processes:"
+            ps aux
+          '
