@@ -47,10 +47,10 @@ jobs:
           source .venv/bin/activate
           pip install ansible==8.6.1 ansible-vault
 
-          - name: Decrypt Ansible Vault
-          env:
-            ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
-          run: |
+      - name: Decrypt Ansible Vault
+        env:
+          ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+        run: |
             echo "$ANSIBLE_VAULT_PASSWORD" > .vault_pass
             chmod 600 .vault_pass
             ansible-vault decrypt --vault-password-file .vault_pass ansible/group_vars/vault.yml
