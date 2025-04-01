@@ -68,136 +68,33 @@
                 </div>
             </div>
             
-            <!-- Projects Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                @foreach ($projects as $project)
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition duration-300 ease-in-out transform hover:-translate-y-2 hover:shadow-md">
-                        <div class="relative">
-                            @if ($project->images && count($project->images) > 0)
-                                <img src="{{ $project->images[0]->image_url }}" alt="{{ $project->title }}" class="w-full h-52 object-cover">
-                            @else
-                                <div class="w-full h-52 bg-gray-100 flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-gray-300">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                                    </svg>
-                                </div>
-                            @endif
-                            
-                            <!-- Project Status Badge -->
-                            <div class="absolute top-4 right-4 bg-white rounded-full px-3 py-1 text-xs font-medium shadow-sm">
-                                @if($project->status === 'completed')
-                                    Terminé
-                                @elseif($project->status === 'upcoming')
-                                    À venir
-                                @else
-                                    {{ round(($project->current_amount / $project->goal_amount) * 100) }}% financé
-                                @endif
-                            </div>
-                            
-                            <!-- Category Badge -->
-                            <div class="absolute bottom-4 left-4 bg-lime-500 text-white rounded-full px-3 py-1 text-xs font-medium shadow-sm">
-                                {{ $project->category->name }}
-                            </div>
-                        </div>
-                        
-                        <div class="p-6">
-                            <div class="flex items-center mb-3">
-                                <div class="w-8 h-8 rounded-full bg-gray-200 overflow-hidden mr-3">
-                                    @if($project->user->profile_photo)
-                                        <img src="{{ $project->user->profile_photo }}" alt="{{ $project->user->name }}" class="w-full h-full object-cover">
-                                    @else
-                                        <div class="w-full h-full flex items-center justify-center text-gray-500">
-                                            {{ substr($project->user->name, 0, 1) }}
-                                        </div>
-                                    @endif
-                                </div>
-                                <span class="text-sm text-gray-600">{{ $project->user->name }}</span>
-                            </div>
-                            
-                            <h2 class="text-xl font-bold text-gray-800 mb-2 line-clamp-2">{{ $project->title }}</h2>
-                            <p class="text-gray-600 mb-6 text-sm line-clamp-3">{{ $project->description }}</p>
-                            
-                            <!-- Progress Bar -->
-                            <div class="mb-4">
-                                <div class="w-full bg-gray-100 rounded-full h-2">
-                                    <div class="bg-lime-500 h-2 rounded-full" style="width: {{ min(($project->current_amount / $project->goal_amount) * 100, 100) }}%"></div>
-                                </div>
-                            </div>
-                            
-                            <!-- Stats -->
-                            <div class="flex justify-between items-center mb-6 text-sm">
-                                <div>
-                                    <span class="text-gray-500 block">Objectif</span>
-                                    <span class="font-bold text-gray-800">{{ number_format($project->goal_amount, 0, ',', ' ') }} €</span>
-                                </div>
-                                <div class="text-right">
-                                    <span class="text-gray-500 block">Collectés</span>
-                                    <span class="font-bold text-lime-600">{{ number_format($project->current_amount, 0, ',', ' ') }} €</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Days Left -->
-                            <div class="flex justify-between items-center mb-6">
-                                <div class="flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    <span class="text-sm text-gray-600">
-                                        @if($project->status === 'completed')
-                                            Terminé
-                                        @elseif($project->status === 'upcoming')
-                                            Débute le {{ $project->start_date->format('d/m/Y') }}
-                                        @else
-                                            {{ $project->days_left }} jours restants
-                                        @endif
-                                    </span>
-                                </div>
-                                <div class="flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                    </svg>
-                                    <span class="text-sm text-gray-600">{{ $project->backers_count }} contributeurs</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Action Button -->
-                            <a href="{{ route('projects.show', $project) }}" class="block w-full bg-lime-500 hover:bg-lime-600 text-white text-center py-3 rounded-lg transition duration-300 font-medium">
-                                @if($project->status === 'completed')
-                                    Voir les résultats
-                                @elseif($project->status === 'upcoming')
-                                    S'inscrire à l'alerte
-                                @else
-                                    Contribuer
-                                @endif
-                            </a>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
+             <!-- Projects Grid Container -->
+        <div id="projects-grid-container">
             
-            <!-- Empty State -->
-            @if(count($projects) === 0)
-                <div class="text-center py-16 bg-white rounded-xl shadow-sm border border-gray-100">
-                    <div class="bg-lime-50 inline-flex rounded-full p-4 mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-lime-500">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">Aucun projet disponible</h3>
-                    <p class="text-gray-600 mb-8">Aucun projet ne correspond à vos critères de recherche. Essayez d'ajuster vos filtres.</p>
-                    <button onclick="resetFilters()" class="bg-lime-500 hover:bg-lime-600 text-white font-medium px-6 py-2 rounded-lg transition duration-300">
-                        Réinitialiser les filtres
-                    </button>
-                </div>
-            @endif
-            
-            <!-- Pagination -->
-            <div class="mt-12">
-                {{ $projects->links() }}
-            </div>
+            @include('projects.partials.projects-grid-website', ['projects' => $projects])
         </div>
-    </section>
+        
+        <!-- Pagination Container -->
+        <div id="pagination-container" class="mt-6">
+            {{ $projects->links() }}
+        </div>
 
+        @if(count($projects) === 0)
+            <div class="text-center py-16 bg-white rounded-xl shadow-sm border border-gray-100">
+                <div class="bg-lime-50 inline-flex rounded-full p-4 mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-lime-500">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Aucun projet disponible</h3>
+                <p class="text-gray-600 mb-8">Aucun projet ne correspond à vos critères de recherche. Essayez d'ajuster vos filtres.</p>
+                <button onclick="resetFilters()" class="bg-lime-500 hover:bg-lime-600 text-white font-medium px-6 py-2 rounded-lg transition duration-300">
+                    Réinitialiser les filtres
+                </button>
+            </div>
+        @endif
+        </div>
+        </section>
     <!-- Call to Action -->
     <section class="bg-gray-50 py-20 px-6 mb-20">
         <div class="container mx-auto max-w-6xl">
@@ -206,7 +103,7 @@
                 <p class="text-lg text-gray-600 mb-8">
                     Lancez votre propre campagne de financement et donnez vie à vos idées grâce à notre communauté.
                 </p>
-                <a href="#" class="inline-block bg-lime-500 hover:bg-lime-600 text-white font-medium px-8 py-3 rounded-lg transition duration-300">
+                <a href="#" class="inline-block bg-lime-300 hover:bg-lime-400 text-fg font-medium px-8 py-3 rounded-lg transition duration-300">
                     Créer un projet
                 </a>
             </div>
@@ -296,44 +193,54 @@
             const emptyState = document.querySelector('.text-center.py-16');
             
             function loadProjects() {
-                const params = new URLSearchParams();
-                
-                if (searchInput.value) params.append('search', searchInput.value);
-                if (statusFilter.value) params.append('status', statusFilter.value);
-                if (categoryFilter.value) params.append('category', categoryFilter.value);
-                if (sortBy.value) params.append('sort', sortBy.value);
-                
-                // Update URL without reloading
-                const newUrl = `${window.location.pathname}?${params.toString()}`;
-                window.history.pushState({}, '', newUrl);
-                
-                fetch(`${window.location.pathname}?${params.toString()}&ajax=1`, {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                })
-                .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.html) {
-                        projectsGrid.innerHTML = data.html;
-                    }
-                    
-                    if (paginationContainer && data.pagination) {
-                        paginationContainer.innerHTML = data.pagination;
-                    }
-                    
-                    // Show/hide empty state
-                    if (emptyState) {
-                        if (data.html.includes('bg-white rounded-xl shadow-sm')) {
-                            emptyState.classList.add('hidden');
-                        } else {
-                            emptyState.classList.remove('hidden');
-                        }
-                    }
-                })
-                .catch(error => console.error('Error:', error));
+    const params = new URLSearchParams();
+    
+    if (searchInput.value) params.append('search', searchInput.value);
+    if (statusFilter.value) params.append('status', statusFilter.value);
+    if (categoryFilter.value) params.append('category', categoryFilter.value);
+    if (sortBy.value) params.append('sort', sortBy.value);
+    
+    fetch(`${window.location.pathname}?${params.toString()}&ajax=1`, {
+        headers: { 
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.json();
+    })
+    .then(data => {
+        // Mettre à jour la grille de projets
+        if (data.html) {
+            document.querySelector('#projects-grid-container').innerHTML = data.html;
+        }
+        
+        // Mettre à jour la pagination
+        if (data.pagination) {
+            document.querySelector('#pagination-container').innerHTML = data.pagination;
+        }
+        
+        // Mettre à jour les valeurs des filtres
+        if (data.filters) {
+            searchInput.value = data.filters.search || '';
+            statusFilter.value = data.filters.status || '';
+            categoryFilter.value = data.filters.category || '';
+            sortBy.value = data.filters.sort || 'newest';
+        }
+        
+        // Gérer l'état vide
+        const emptyState = document.querySelector('#empty-state');
+        if (emptyState) {
+            if (data.html.includes('project-item')) { // Supposons que vos projets ont la classe 'project-item'
+                emptyState.classList.add('hidden');
+            } else {
+                emptyState.classList.remove('hidden');
             }
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
             
             [searchInput, statusFilter, categoryFilter, sortBy].forEach(element => {
                 if (element) {

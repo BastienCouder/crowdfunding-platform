@@ -31,6 +31,9 @@ class ProjectController extends Controller
                 case 'completed':
                     $query->where('end_date', '<', now());
                     break;
+                case 'upcoming':
+                    $query->where('start_date', '>', now());
+                    break;
             }
         }
     
@@ -42,17 +45,24 @@ class ProjectController extends Controller
         switch ($request->sort ?? 'newest') {
             case 'newest': $query->latest(); break;
             case 'oldest': $query->oldest(); break;
-            case 'amount-high': $query->orderBy('current_amount', 'desc'); break;
-            case 'amount-low': $query->orderBy('current_amount', 'asc'); break;
+            case 'popular': $query->orderBy('views', 'desc'); break;
+            case 'ending': $query->orderBy('end_date', 'asc'); break;
+            case 'most_funded': $query->orderBy('current_amount', 'desc'); break;
         }
     
         $projects = $query->paginate(10);
         $categories = Category::all();
     
-        if ($request->ajax() || $request->has('ajax')) {
+        if ($request->ajax()) {
             return response()->json([
                 'html' => view('projects.partials.projects-grid-website', compact('projects'))->render(),
-                'pagination' => $projects->links()->toHtml()
+                'pagination' => $projects->links()->toHtml(),
+                'filters' => [
+                    'search' => $request->search,
+                    'status' => $request->status,
+                    'category' => $request->category,
+                    'sort' => $request->sort
+                ]
             ]);
         }
     

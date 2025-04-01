@@ -8,77 +8,39 @@ on:
       - main
 
 jobs:
-  yamllint:
+  lint:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        linter: ['yamllint', 'ansible-lint', 'pre-commit']
     steps:
       - uses: actions/checkout@v4
+      
       - uses: actions/setup-python@v4
         with:
           python-version: "3.10"
-
-      - name: Create and use virtual environment
+          
+      - name: Set up environment
         run: |
           python -m venv venv
           source venv/bin/activate
           pip install --upgrade pip
-
-      - name: Install yamllint
-        run: |
-          source venv/bin/activate
-          pip install yamllint
-
-      - name: Run yamllint
+          pip install yamllint ansible ansible-lint pre-commit
+          
+      - name: Run Yamllint
+        if: matrix.linter == 'yamllint'
         run: |
           source venv/bin/activate
           yamllint .
-
-  ansible-lint:
-    runs-on: ubuntu-latest
-    needs: yamllint
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-
-      - name: Create and use virtual environment
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install --upgrade pip
-
-      - name: Install dependencies
-        run: |
-          source venv/bin/activate
-          pip install ansible ansible-lint
-
-      - name: Run ansible-lint
+          
+      - name: Run Ansible-lint
+        if: matrix.linter == 'ansible-lint'
         run: |
           source venv/bin/activate
           ansible-lint
-
-  pre-commit:
-    runs-on: ubuntu-latest
-    needs: [yamllint, ansible-lint]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-
-      - name: Create and use virtual environment
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install --upgrade pip
-
-      - name: Install pre-commit
-        run: |
-          source venv/bin/activate
-          pip install pre-commit
-
-      - name: Run pre-commit
+          
+      - name: Run Pre-commit
+        if: matrix.linter == 'pre-commit'
         run: |
           source venv/bin/activate
           pre-commit run --all-files

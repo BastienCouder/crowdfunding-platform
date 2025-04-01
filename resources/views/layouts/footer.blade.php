@@ -1,7 +1,7 @@
 <footer class="bg-black text-white py-8 mb-12 rounded-xl">
   <div class="container mx-auto px-6">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <!-- Logo and Info -->
+          <!-- Logo et Informations -->
           <div>
               <div class="flex items-center mb-4">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-lime-400">
@@ -10,47 +10,35 @@
                   </svg>
                   <span class="ml-2 font-semibold">Fund</span>
               </div>
-              <p class="text-sm text-gray-400 mb-4">Trusted by thousands & make a difference in someone's life today.</p>
+              <p class="text-sm text-gray-400 mb-4">Fiable pour des milliers de personnes et faites une différence dans une vie aujourd'hui.</p>
               <p class="text-xs text-gray-500">
-                  &copy; Fund 2023<br>
-                  All rights reserved
+                  &copy; Fund {{ now()->year }}<br>
+                  Tous droits réservés
               </p>
           </div>
+
           
-          <!-- Donate Links -->
+          <!-- Liens d'Aide -->
           <div>
-              <h3 class="font-semibold mb-4">Donate</h3>
+              <h3 class="font-semibold mb-4">Aide</h3>
               <ul class="space-y-2 text-sm text-gray-400">
-                  <li><a href="#" class="hover:text-white">How To Donate</a></li>
-                  <li><a href="#" class="hover:text-white">Fundraise</a></li>
-                  <li><a href="#" class="hover:text-white">Volunteer</a></li>
-                  <li><a href="#" class="hover:text-white">Donate</a></li>
+                  <li><a href="#" class="hover:text-white">Politique de confidentialité</a></li>
+                  <li><a href="#" class="hover:text-white">Centre d'aide</a></li>
               </ul>
           </div>
           
-          <!-- Help Links -->
+          <!-- Liens de l'Entreprise -->
           <div>
-              <h3 class="font-semibold mb-4">Help</h3>
+              <h3 class="font-semibold mb-4">Entreprise</h3>
               <ul class="space-y-2 text-sm text-gray-400">
-                  <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
-                  <li><a href="#" class="hover:text-white">Help Center</a></li>
-                  <li><a href="#" class="hover:text-white">Contacts</a></li>
-              </ul>
-          </div>
-          
-          <!-- Company Links -->
-          <div>
-              <h3 class="font-semibold mb-4">Company</h3>
-              <ul class="space-y-2 text-sm text-gray-400">
-                  <li><a href="#" class="hover:text-white">About</a></li>
-                  <li><a href="#" class="hover:text-white">Careers</a></li>
-                  <li><a href="#" class="hover:text-white">Press</a></li>
-                  <li><a href="#" class="hover:text-white">Terms</a></li>
+                  <li><a href="#" class="hover:text-white">À propos</a></li>
+                  <li><a href="#" class="hover:text-white">Fonctionnement</a></li>
+                  <li><a href="#" class="hover:text-white">FAQ</a></li>
               </ul>
           </div>
       </div>
       
-      <!-- Social Media Links -->
+      <!-- Liens des Réseaux Sociaux -->
       <div class="flex space-x-6 mt-8 justify-center">
           <a href="#" class="text-gray-400 hover:text-white">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -75,4 +63,3 @@
       </div>
   </div>
 </footer>
-

@@ -90,24 +90,6 @@
                                 @endif
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <x-input-label for="phone" :value="__('Téléphone')" class="block text-sm font-medium text-gray-700 mb-1" />
-                                    <x-text-input id="phone" name="phone" type="tel" class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-lime-500 focus:ring-lime-500" :value="old('phone', $user->phone ?? '')" />
-                                </div>
-                                
-                                <div>
-                                    <x-input-label for="location" :value="__('Localisation')" class="block text-sm font-medium text-gray-700 mb-1" />
-                                    <x-text-input id="location" name="location" type="text" class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-lime-500 focus:ring-lime-500" :value="old('location', $user->location ?? '')" />
-                                </div>
-                            </div>
-
-                            <div>
-                                <x-input-label for="bio" :value="__('Biographie')" class="block text-sm font-medium text-gray-700 mb-1" />
-                                <textarea id="bio" name="bio" rows="4" class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-lime-500 focus:ring-lime-500">{{ old('bio', $user->bio ?? '') }}</textarea>
-                                <p class="mt-1 text-xs text-gray-500">Brève description qui apparaîtra sur votre profil public.</p>
-                            </div>
-
                             <div class="flex items-center gap-4">
                                 <button type="submit" class="inline-flex items-center px-4 py-2 bg-lime-300 hover:bg-lime-400 text-fg font-medium rounded-lg transition-colors shadow-sm">
                                     {{ __('Enregistrer') }}

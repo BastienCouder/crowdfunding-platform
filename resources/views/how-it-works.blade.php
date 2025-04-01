@@ -6,7 +6,7 @@
     <picture>
             <source srcset="{{ asset('images/hands.webp') }}" type="image/webp">
             <source srcset="{{ asset('images/hands.jpg') }}" type="image/jpeg">
-            <img src="{{ asset('images/hands.jpg') }}" 
+            <img src="{{ asset('images/hands.jpg') }}"
                  alt="Mains qui se tendent les unes vers les autres" 
                  loading="eager"
                  width="1200"
@@ -142,7 +142,7 @@
             
             <div class="relative">
                 <img src="{{ asset('images/project-creator.jpg') }}" alt="Porteur de projet" class="rounded-xl shadow-md w-full h-auto">
-                <div class="absolute -bottom-6 -right-6 bg-lime-500 text-white p-6 rounded-lg shadow-lg">
+                <div class="absolute -bottom-6 -right-6 bg-lime-300 text-fg p-6 rounded-lg shadow-lg">
                     <p class="text-2xl font-bold">93%</p>
                     <p class="text-sm">des projets bien préparés atteignent leur objectif</p>
                 </div>
@@ -510,7 +510,7 @@
             </div>
             
             <div class="text-center mt-10">
-                <a href="#" class="text-lime-600 hover:text-lime-700 font-medium">
+                <a href="{{ route('faq') }}" class="text-lime-600 hover:text-lime-700 font-medium">
                     Voir toutes les questions →
                 </a>
             </div>
