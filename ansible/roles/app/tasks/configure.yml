@@ -1,16 +1,4 @@
 ---
-- name: Vérifier l'existence du fichier vault
-  stat:
-    path: "../../group_vars/vault.yml"
-  register: vault_file
-
-- name: Charger les secrets
-  include_vars:
-    file: "../../group_vars/vault.yml"
-    name: secrets
-  no_log: true
-  when: vault_file.stat.exists
-
 - name: Créer la structure de répertoires
   file:
     path: "{{ item }}"
@@ -21,22 +9,52 @@
   loop:
     - "{{ app_root }}"
     - "{{ app_root }}/storage"
+    - "{{ app_root }}/bootstrap/cache"
 
-- name: Cloner le dépôt Git
-  git:
-    repo: "{{ app_repo }}"
-    dest: "{{ app_root }}"
-    version: "{{ app_branch }}"
-    depth: 1
-    force: yes
-    register: git_result
-    retries: 3
-    delay: 10
-    until: git_result is succeeded
+- name: Configurer les permissions temporaires (pour clonage)
+  file:
+    path: "{{ app_root }}"
+    owner: "{{ ansible_user | default('ubuntu') }}"
+    group: "{{ ansible_user | default('ubuntu') }}"
+    recurse: yes
+  when: not ansible_check_mode
 
-- name: Créer le fichier .env
-  ansible.builtin.template:
-    src: "../templates/laravel/.env.j2"
+- name: Cloner ou mettre à jour le dépôt Git
+  block:
+    - name: Effectuer le clone initial
+      ansible.builtin.git:
+        repo: "{{ app_repo }}"
+        dest: "{{ app_root }}"
+        version: "{{ app_branch }}"
+        depth: 1
+        force: yes
+      register: git_result
+      retries: 3
+      delay: 10
+      until: git_result is succeeded
+      ignore_errors: "{{ ansible_check_mode }}"
+
+    - name: Mettre à jour le dépôt existant
+      ansible.builtin.git:
+        repo: "{{ app_repo }}"
+        dest: "{{ app_root }}"
+        version: "{{ app_branch }}"
+        update: yes
+      when:
+        - not git_result.changed
+        - not ansible_check_mode
+
+- name: Restaurer les permissions de l'application
+  file:
+    path: "{{ app_root }}"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    recurse: yes
+  when: not ansible_check_mode
+
+- name: Déployer le fichier .env
+  template:
+    src: "laravel/.env.j2"
     dest: "{{ app_root }}/.env"
     owner: "{{ app_user }}"
     group: "{{ app_group }}"
@@ -48,39 +66,58 @@
     command: install
     working_dir: "{{ app_root }}"
     no_dev: false
+    optimize_autoloader: true
+  environment:
+    COMPOSER_MEMORY_LIMIT: -1
 
-- name: Configurer les permissions du stockage
-  ansible.builtin.file:
-    path: "{{ app_root }}/storage"
-    state: directory
-    mode: '0775'
-    recurse: yes
+- name: Configurer les permissions critiques
+  file:
+    path: "{{ item.path }}"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: "{{ item.mode }}"
+    recurse: "{{ item.recurse | default(false) }}"
+  loop:
+    - { path: "{{ app_root }}/storage", mode: '0775', recurse: true }
+    - { path: "{{ app_root }}/bootstrap/cache", mode: '0775', recurse: true }
+    - { path: "{{ app_root }}/.env", mode: '0640' }
 
-- name: Vérifier l'état des migrations avant
-  command: php artisan migrate:status
-  register: migration_status
-  changed_when: false
+- name: Optimiser l'application
+  command: php artisan optimize
   args:
     chdir: "{{ app_root }}"
+  notify: restart php-fpm
 
-- name: Exécuter les migrations si nécessaire
+- name: Vérifier l'état des migrations
+  command: php artisan migrate:status
+  args:
+    chdir: "{{ app_root }}"
+  register: migration_status
+  changed_when: false
+
+- name: Exécuter les migrations si nécessaires
   command: php artisan migrate --force
   args:
     chdir: "{{ app_root }}"
   when: "'Pending' in migration_status.stdout"
-  register: migration_executed
-  changed_when: migration_executed.rc == 0
   notify:
     - clear cache
+    - restart php-fpm
 
 - name: Déployer la configuration Nginx
   template:
-    src: "templates/nginx/laravel.conf.j2"
+    src: "nginx/laravel.conf.j2"
     dest: "/etc/nginx/sites-available/{{ app_name }}.conf"
   notify: reload nginx
 
-- name: Activer le site
+- name: Activer le site Nginx
   file:
     src: "/etc/nginx/sites-available/{{ app_name }}.conf"
     dest: "/etc/nginx/sites-enabled/{{ app_name }}.conf"
     state: link
+  notify: reload nginx
+
+- name: Valider la configuration Nginx
+  command: nginx -t
+  changed_when: false
+  notify: reload nginx
