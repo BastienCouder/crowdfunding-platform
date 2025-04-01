@@ -1,21 +1,25 @@
 ---
-- name: Install required packages
+- name: Ensure system is updated
+  apt:
+    update_cache: yes
+    upgrade: dist
+
+- name: Add PHP repository (if needed)
+  apt_repository:
+    repo: "ppa:ondrej/php"
+    state: present
+  when: php_specific_version | default(false)
+
+- name: Install PHP packages
   apt:
     pkg:
       - git
       - unzip
-      - php{{ php_version }}
-      - php{{ php_version }}-fpm
-      - php{{ php_version }}-mysql
-      - php{{ php_version }}-mbstring
-      - php{{ php_version }}-xml
-      - php{{ php_version }}-curl
-      - php{{ php_version }}-bcmath
+      - "{{ 'php' + php_version if php_specific_version | default(false) else 'php' }}"
+      - "{{ 'php' + php_version + '-fpm' if php_specific_version | default(false) else 'php-fpm' }}"
+      - php-mysql
+      - php-mbstring
+      - php-xml
+      - php-curl
+      - php-bcmath
     state: present
-    update_cache: true
-
-- name: Install Composer
-  apt:
-    pkg: composer
-    state: present
-    update_cache: true
