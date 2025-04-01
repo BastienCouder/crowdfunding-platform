@@ -11,13 +11,24 @@
     - "{{ app_root }}/storage"
     - "{{ app_root }}/bootstrap/cache"
 
-- name: Configurer les permissions temporaires (pour clonage)
-  file:
-    path: "{{ app_root }}"
-    owner: "{{ ansible_user | default('ubuntu') }}"
-    group: "{{ ansible_user | default('ubuntu') }}"
-    recurse: yes
-  when: not ansible_check_mode
+- name: Configurer les permissions temporaires
+  block:
+    - name: Vérifier l'existence de l'utilisateur
+      command: id -u "{{ ansible_user }}"
+      register: user_check
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Appliquer les permissions temporaires
+      file:
+        path: "{{ app_root }}"
+        owner: "{{ ansible_user if user_check.rc == 0 else omit }}"
+        group: "{{ ansible_user if user_check.rc == 0 else omit }}"
+        recurse: yes
+      when: not ansible_check_mode
+  rescue:
+    - debug:
+        msg: "L'utilisateur {{ ansible_user }} n'existe pas, continuation sans changer le propriétaire"
 
 - name: Cloner ou mettre à jour le dépôt Git
   block:
