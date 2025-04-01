@@ -56,11 +56,22 @@
     mode: '0775'
     recurse: yes
 
-- name: Exécuter les migrations (si demandé)
-  ansible.builtin.command: php artisan migrate --force
+- name: Vérifier l'état des migrations avant
+  command: php artisan migrate:status
+  register: migration_status
+  changed_when: false
   args:
     chdir: "{{ app_root }}"
-  when: "'migrate' in ansible_run_tags"
+
+- name: Exécuter les migrations si nécessaire
+  command: php artisan migrate --force
+  args:
+    chdir: "{{ app_root }}"
+  when: "'Pending' in migration_status.stdout"
+  register: migration_executed
+  changed_when: migration_executed.rc == 0
+  notify:
+    - clear cache
 
 - name: Déployer la configuration Nginx
   template:
@@ -73,8 +84,3 @@
     src: "/etc/nginx/sites-available/{{ app_name }}.conf"
     dest: "/etc/nginx/sites-enabled/{{ app_name }}.conf"
     state: link
-
-- name: Configurer SSL avec Certbot
-  include_role:
-    name: certbot
-  tags: certbot
