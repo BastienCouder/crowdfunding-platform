@@ -1,0 +1,16 @@
+---
+extends: default
+
+rules:
+  line-length:
+    max: 153
+    level: warning
+  truthy: disable
+  new-line-at-end-of-file: disable
+
+overrides:
+  group_vars/vault.yml:
+    rules:
+      document-start:
+        present: false
+      braces: disable

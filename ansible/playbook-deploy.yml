@@ -1,0 +1,16 @@
+---
+- name: Déploiement local complet
+  hosts: localhost
+  connection: local
+  become: true
+  tasks:
+    - include_vars: group_vars/all.yml
+    - include_vars:
+        file: group_vars/vault.yml
+        name: secrets
+      no_log: true
+
+  roles:
+    - nginx
+    - certbot
+    - app

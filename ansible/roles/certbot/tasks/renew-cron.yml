@@ -1,0 +1,9 @@
+---
+
+- name: Add certbot renewal cron
+  cron:
+    name: "Certbot renewal"
+    job: "certbot renew --quiet --no-self-upgrade"
+    minute: "0"
+    hour: "3"
+    weekday: "*/3"

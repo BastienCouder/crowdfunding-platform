@@ -13,8 +13,11 @@ return new class extends Migration
     {
         Schema::create('project_images', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('project_id')->constrained()->onDelete('cascade'); // Clé étrangère vers la table projects
-            $table->string('image_url'); // URL de l'image
+            $table->foreignId('project_id')->constrained()->onDelete('cascade');
+            $table->text('image_data')->nullable(); // Pour stocker base64
+            $table->string('image_url')->nullable(); // Pour stocker le chemin
+            $table->string('mime_type')->nullable();
+            $table->boolean('is_main')->default(false);
             $table->timestamps();
         });
     }

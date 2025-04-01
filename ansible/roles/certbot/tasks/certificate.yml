@@ -1,0 +1,19 @@
+---
+- name: Vérifier si Nginx est installé
+  stat:
+    path: /usr/sbin/nginx
+  register: nginx_installed
+
+- name: Obtenir le certificat Certbot
+  command: >
+    certbot --nginx --noninteractive --agree-tos --redirect
+    --email {{ certbot_email }} -d {{ domain_name }}
+  when: nginx_installed.stat.exists
+  register: certbot_result
+  changed_when: "'Congratulations' in certbot_result.stdout"
+
+- name: Redémarrer Nginx si installé
+  service:
+    name: nginx
+    state: restarted
+  when: nginx_installed.stat.exists

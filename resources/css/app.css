@@ -15,3 +15,32 @@
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
 }
+
+.pagination {
+    @apply flex justify-center mt-8;
+  }
+  
+  .pagination .page-item {
+    @apply mx-1;
+  }
+  
+  .pagination .page-link {
+    @apply px-4 py-2 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition duration-300;
+  }
+  
+  .pagination .page-item.active .page-link {
+    @apply bg-primary-500 text-foreground border-primary-500 hover:bg-primary-600;
+  }
+  
+  .pagination .page-item.disabled .page-link {
+    @apply text-gray-400 cursor-not-allowed hover:bg-white;
+  }
+  
+  ::selection {
+    background-color: #1d9b4b;
+    color: white;
+  }
+  ::-moz-selection {
+    background-color: #1d9b4b;
+    color: white;
+  }

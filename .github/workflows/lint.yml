@@ -1,0 +1,46 @@
+---
+name: Lint
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        linter: ['yamllint', 'ansible-lint', 'pre-commit']
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+          
+      - name: Set up environment
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install yamllint ansible ansible-lint pre-commit
+          
+      - name: Run Yamllint
+        if: matrix.linter == 'yamllint'
+        run: |
+          source venv/bin/activate
+          yamllint .
+          
+      - name: Run Ansible-lint
+        if: matrix.linter == 'ansible-lint'
+        run: |
+          source venv/bin/activate
+          ansible-lint
+          
+      - name: Run Pre-commit
+        if: matrix.linter == 'pre-commit'
+        run: |
+          source venv/bin/activate
+          pre-commit run --all-files

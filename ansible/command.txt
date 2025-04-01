@@ -1,0 +1,53 @@
+// ansible playbook
+ansible-playbook -i inventory.ini playbook-deploy.yml
+
+// ansible playbook with vault
+ansible-playbook -i inventory.ini playbook-deploy.yml --vault-password-file .vault_pass.txt
+
+// ansible playbook with vault and ask vault pass
+ansible-playbook -i inventory.ini playbook-deploy.yml --ask-vault-pass
+
+# Pour la production
+ansible-playbook -i inventory playbook-deploy.yml --ask-vault-pass
+
+ansible-vault create group_vars/vault.yml
+
+# Build production
+docker build -t myapp-ansible:prod -f Dockerfile.prod .
+
+# Production (mot de passe interactif)
+docker run -it -v $(pwd)/.vault-pass-prod:/ansible/.vault-pass myapp-ansible:prod
+
+// Lancer le playbook en dry-run
+ansible-playbook playbook-deploy.yml --check --diff
+
+// create file
+ansible-vault create vars/secrets.yml
+
+// view file
+ansible-vault view vars/secrets.yml
+
+// encrypt file
+ansible-vault encrypt vars/secrets.yml
+
+// decrypt file
+ansible-vault decrypt vars/secrets.yml
+
+// file password
+.vault_pass.txt
+echo "mon_mot_de_passe_vault" > .vault_pass.txt
+
+//secure
+chmod 600 vars/secrets.yml
+
+
+// install vault
+curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys AA16FCBCA621E701
+sudo apt update && sudo apt install vault
+
+
+// Dockerfile
+docker build -t ansible-runner .
+docker run --rm ansible-runner

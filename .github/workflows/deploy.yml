@@ -1,0 +1,76 @@
+name: Deploy Laravel
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 700 ~/.ssh
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.SSH_IP_SERVER }} >> ~/.ssh/known_hosts
+          echo "Host deploy-target" >> ~/.ssh/config
+          echo "  HostName ${{ secrets.SSH_IP_SERVER }}" >> ~/.ssh/config
+          echo "  User ${{ secrets.SSH_USER }}" >> ~/.ssh/config
+          echo "  IdentityFile ~/.ssh/deploy_key" >> ~/.ssh/config
+          echo "  StrictHostKeyChecking no" >> ~/.ssh/config
+          chmod 600 ~/.ssh/config
+
+      - name: Verify SSH connection
+        run: ssh deploy-target "echo 'SSH Connection Successful!'"
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Create virtual environment
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          python -m pip install --upgrade pip
+
+      - name: Install Ansible
+        run: |
+          source .venv/bin/activate
+          pip install ansible==8.6.1 ansible-vault
+
+          - name: Decrypt Ansible Vault
+          env:
+            ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+          run: |
+            echo "$ANSIBLE_VAULT_PASSWORD" > .vault_pass
+            chmod 600 .vault_pass
+            ansible-vault decrypt --vault-password-file .vault_pass ansible/group_vars/vault.yml
+            rm -f .vault_pass
+  
+      - name: Run Ansible deployment
+        env:
+          ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+        run: |
+          ansible-playbook \
+            -i ansible/inventory.ini \
+            --vault-password-file <(echo "$ANSIBLE_VAULT_PASSWORD") \
+            ansible/playbook-deploy.yml -vvv
+  
+      - name: Re-encrypt vault files
+        if: always()
+        env:
+          ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+        run: |
+          ansible-vault encrypt --vault-password-file <(echo "$ANSIBLE_VAULT_PASSWORD") ansible/group_vars/vault.yml
+
+      - name: Verify deployment
+        run: ssh deploy-target "cd /var/www/laravel && php artisan --version"

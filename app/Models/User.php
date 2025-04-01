@@ -24,6 +24,8 @@ class User extends Authenticatable
         'role',
         'avatar',
         'bio',
+        'phone', // Ajouté
+        'location', // Ajouté
     ];
 
     /**
@@ -57,5 +59,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function commentLikes()
+    {
+        return $this->hasMany(CommentLike::class);
     }
 }

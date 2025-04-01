@@ -1,0 +1,80 @@
+---
+- name: Vérifier l'existence du fichier vault
+  stat:
+    path: "../../group_vars/vault.yml"
+  register: vault_file
+
+- name: Charger les secrets
+  include_vars:
+    file: "../../group_vars/vault.yml"
+    name: secrets
+  no_log: true
+  when: vault_file.stat.exists
+
+- name: Créer la structure de répertoires
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0755'
+  loop:
+    - "{{ app_root }}"
+    - "{{ app_root }}/storage"
+
+- name: Cloner le dépôt Git
+  git:
+    repo: "{{ app_repo }}"
+    dest: "{{ app_root }}"
+    version: "{{ app_branch }}"
+    depth: 1
+    force: yes
+    register: git_result
+    retries: 3
+    delay: 10
+    until: git_result is succeeded
+
+- name: Créer le fichier .env
+  ansible.builtin.template:
+    src: "../templates/laravel/.env.j2"
+    dest: "{{ app_root }}/.env"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: "0640"
+  no_log: true
+
+- name: Installer les dépendances Composer
+  community.general.composer:
+    command: install
+    working_dir: "{{ app_root }}"
+    no_dev: false
+
+- name: Configurer les permissions du stockage
+  ansible.builtin.file:
+    path: "{{ app_root }}/storage"
+    state: directory
+    mode: '0775'
+    recurse: yes
+
+- name: Exécuter les migrations (si demandé)
+  ansible.builtin.command: php artisan migrate --force
+  args:
+    chdir: "{{ app_root }}"
+  when: "'migrate' in ansible_run_tags"
+
+- name: Déployer la configuration Nginx
+  template:
+    src: "templates/nginx/laravel.conf.j2"
+    dest: "/etc/nginx/sites-available/{{ app_name }}.conf"
+  notify: reload nginx
+
+- name: Activer le site
+  file:
+    src: "/etc/nginx/sites-available/{{ app_name }}.conf"
+    dest: "/etc/nginx/sites-enabled/{{ app_name }}.conf"
+    state: link
+
+- name: Configurer SSL avec Certbot
+  include_role:
+    name: certbot
+  tags: certbot
