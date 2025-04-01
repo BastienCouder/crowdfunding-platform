@@ -1,56 +1,57 @@
 ---
-name: Deploy Laravel
-
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Add SSH key
-        uses: webfactory/ssh-agent@v0.7.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Configure Git SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo -e "Host github.com\n  HostName github.com\n  IdentityFile ~/.ssh/id_rsa\n  User git" > ~/.ssh/config
-          chmod 600 ~/.ssh/config
-
-      - name: Test SSH connection
-        run: ssh -T git@github.com || true
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-
-      - name: Create virtual environment
-        run: |
-          python -m venv .venv
-          source .venv/bin/activate
-          python -m pip install --upgrade pip
-
-      - name: Install Ansible and dependencies
-        run: |
-          source .venv/bin/activate
-          pip install ansible==8.6.1 ansible-lint
-
-      - name: Validate playbook syntax
-        run: |
-          source .venv/bin/activate
-          ansible-playbook --syntax-check ansible/playbook-deploy.yml
-
-      - name: Run Ansible deployment
-        run: |
-          source .venv/bin/activate
-          echo "Lancement du déploiement Ansible..."
-          ansible-playbook -i ansible/inventory.ini ansible/playbook-deploy.yml
+  name: Deploy Laravel
+  
+  on:
+    push:
+      branches:
+        - main
+    workflow_dispatch:
+  
+  jobs:
+    deploy:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+  
+        - name: Add SSH key
+          uses: webfactory/ssh-agent@v0.7.0
+          with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+  
+        - name: Configure Git SSH
+          run: |
+            mkdir -p ~/.ssh
+            echo -e "Host github.com\n  HostName github.com\n  IdentityFile ~/.ssh/id_rsa\n  User git" > ~/.ssh/config
+            chmod 600 ~/.ssh/config
+  
+        - name: Test SSH connection
+          run: ssh -T git@github.com || true
+  
+        - name: Set up Python
+          uses: actions/setup-python@v4
+          with:
+            python-version: "3.10"
+  
+        - name: Create virtual environment
+          run: |
+            python -m venv .venv
+            source .venv/bin/activate
+            python -m pip install --upgrade pip
+  
+        - name: Install Ansible and dependencies
+          run: |
+            source .venv/bin/activate
+            pip install ansible==8.6.1 ansible-lint
+  
+        - name: Validate playbook syntax
+          run: |
+            source .venv/bin/activate
+            ansible-playbook --syntax-check ansible/playbook-deploy.yml
+  
+        - name: Run Ansible deployment
+          run: |
+            source .venv/bin/activate
+            echo "Lancement du déploiement Ansible..."
+            ansible-playbook -i ansible/inventory.ini ansible/playbook-deploy.yml
+  
