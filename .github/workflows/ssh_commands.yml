@@ -1,28 +1,85 @@
----
 name: SSH Agent Configuration and Remote Command
 
-# Déclencheur : Ce workflow s'exécute sur les push et pull requests
-on: [push]
+on: [push, workflow_dispatch]
 
 jobs:
-    ssh-job:
-        runs-on: ubuntu-latest
+  ssh-job:
+    runs-on: ubuntu-latest
 
-        steps:
-            #  Checkout du code source depuis le dépôt GitHub
-            - name: Checkout code
-              uses: actions/checkout@v3
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-            # Configuration de l'agent SSH
-            - name: Start SSH agent
-              uses: webfactory/ssh-agent@v0.9.0
-              with:
-                  ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Debug - Check SSH directory (before setup)
+        run: |
+          echo "=== Pré-test ==="
+          ls -la ~/ || true
+          ls -la ~/.ssh || true
+          echo "================"
 
-            # Mettre à jour le fichier known_hosts
-            - name: Add Known Hosts
-              run: ssh-keyscan -H 51.75.18.60 >> ~/.ssh/known_hosts
+      - name: Setup SSH environment
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "StrictHostKeyChecking no" > ~/.ssh/config
+          chmod 600 ~/.ssh/config
 
-            # Exécuter la commande "ls" sur le serveur distant
-            - name: Execute remote command
-              run: ssh debian@51.75.18.60 'ls'
+      - name: Start SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        id: ssh-agent
+
+      - name: Debug - Verify SSH key
+        run: |
+          echo "=== Debug SSH Key ==="
+          echo "Key type:"
+          ssh-add -L || true
+          echo "Key fingerprint:"
+          ssh-add -l || true
+          echo "================"
+
+      - name: Add Known Hosts
+        run: |
+          echo "=== Known Hosts ==="
+          ssh-keyscan -H 51.75.18.60 | tee -a ~/.ssh/known_hosts
+          echo "================"
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Debug - Full SSH config check
+        run: |
+          echo "=== Configuration complète ==="
+          ls -la ~/.ssh
+          echo "--- known_hosts content ---"
+          cat ~/.ssh/known_hosts || true
+          echo "--- config content ---"
+          cat ~/.ssh/config || true
+          echo "================"
+
+      - name: Test basic connection
+        run: |
+          echo "=== Test de connexion ==="
+          ssh -v -o BatchMode=yes debian@51.75.18.60 "echo 'Connexion réussie!'" || true
+          echo "================"
+
+      - name: Execute remote command
+        run: |
+          echo "=== Exécution distante ==="
+          ssh -v debian@51.75.18.60 '
+            echo "User: $(whoami)"
+            echo "Home: $HOME"
+            echo "Working dir: $(pwd)"
+            echo "--- Contenu ---"
+            ls -la
+            echo "--- Disk ---"
+            df -h
+          ' || true
+          echo "================"
+
+      - name: Debug - Final verification
+        if: always()
+        run: |
+          echo "=== État final ==="
+          env | grep SSH
+          ls -la ~/.ssh
+          echo "================"
