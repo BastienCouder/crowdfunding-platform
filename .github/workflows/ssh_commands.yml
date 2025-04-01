@@ -1,28 +1,28 @@
 ---
 name: SSH Agent Configuration and Remote Command
 
-on: [push , workflow_dispatch]
+# Déclencheur : Ce workflow s'exécute sur les push et pull requests
+on: [push]
 
 jobs:
     ssh-job:
         runs-on: ubuntu-latest
 
         steps:
-          - uses: actions/checkout@v4
+            #  Checkout du code source depuis le dépôt GitHub
+            - name: Checkout code
+              uses: actions/checkout@v3
 
-          - name: Debug
-            run: |
-              ls -la ~/.ssh
-              ssh-keygen -lf ~/.ssh/id_ed25519
-              echo "Testing connection..."
-              ssh -v -i ~/.ssh/id_ed25519 debian@51.75.18.60 || tru
-    
-          - name: Setup SSH
-            run: |
-                mkdir -p ~/.ssh
-                echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
-                chmod 600 ~/.ssh/id_ed25519
-                ssh-keyscan 51.75.18.60 >> ~/.ssh/known_hosts
+            # Configuration de l'agent SSH
+            - name: Start SSH agent
+              uses: webfactory/ssh-agent@v0.9.0
+              with:
+                  ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-          - name: Test Connection
-            run: ssh -o StrictHostKeyChecking=no debian@51.75.18.60 "echo 'Success!'"
+            # Mettre à jour le fichier known_hosts
+            - name: Add Known Hosts
+              run: ssh-keyscan -H 51.75.18.60 >> ~/.ssh/known_hosts
+
+            # Exécuter la commande "ls" sur le serveur distant
+            - name: Execute remote command
+              run: ssh debian@51.75.18.60 'ls'
