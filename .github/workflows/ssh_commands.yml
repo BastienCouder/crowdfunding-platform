@@ -1,37 +1,27 @@
 ---
-name: Remote Server Command Execution
+name: SSH Agent Configuration and Remote Command
 
-on: [push, workflow_dispatch]
+on: [push , workflow_dispatch]
 
 jobs:
-  remote-ssh:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    ssh-job:
+        runs-on: ubuntu-latest
 
-      - name: Setup SSH Agent
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        steps:
+            #  Checkout du code source depuis le dépôt GitHub
+            - name: Checkout code
+              uses: actions/checkout@v3
 
-      - name: Configure SSH
-        run: |
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          ssh-keyscan -H 51.75.18.60 >> ~/.ssh/known_hosts
-          chmod 600 ~/.ssh/known_hosts
+            # Configuration de l'agent SSH
+            - name: Start SSH agent
+              uses: webfactory/ssh-agent@v0.9.0
+              with:
+                  ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Test Connection
-        run: ssh -o StrictHostKeyChecking=no debian@51.75.18.60 "echo 'SSH Connection Successful!'"
+            # Mettre à jour le fichier known_hosts
+            - name: Add Known Hosts
+              run: ssh-keyscan -H 51.75.18.60 >> ~/.ssh/known_hosts
 
-      - name: Execute Remote Commands
-        run: |
-          ssh debian@51.75.18.60 '
-            echo "Current directory: $(pwd)"
-            echo "Disk space:"
-            df -h
-            echo "Running processes:"
-            ps aux
-          '
+            # Exécuter la commande "ls" sur le serveur distant
+            - name: Execute remote command
+              run: ssh debian@51.75.18.60 'ls'
