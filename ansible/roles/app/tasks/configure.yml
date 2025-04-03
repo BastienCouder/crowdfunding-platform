@@ -39,7 +39,6 @@
         version: "{{ app_branch }}"
         accept_hostkey: true
         key_file: "/home/debian/.ssh/id_ed25519"
-        # Ajoutez ces deux paramètres cruciaux :
         become_user: debian
         become: true
 
