@@ -1,8 +1,4 @@
 ---
-- name: Ensure system is updated
-  apt:
-    update_cache: yes
-    upgrade: dist
 
 - name: Add PHP repository
   apt_repository:
