@@ -13,47 +13,48 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # For proper git operations in Ansible
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 700 ~/.ssh
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.SSH_IP_SERVER }} >> ~/.ssh/known_hosts
+          echo "Host deploy-target" >> ~/.ssh/config
+          echo "  HostName ${{ secrets.SSH_IP_SERVER }}" >> ~/.ssh/config
+          echo "  User ${{ secrets.SSH_USER }}" >> ~/.ssh/config
+          echo "  IdentityFile ~/.ssh/deploy_key" >> ~/.ssh/config
+          echo "  StrictHostKeyChecking no" >> ~/.ssh/config
+          chmod 600 ~/.ssh/config
+
+      - name: Verify SSH connection
+        run: ssh deploy-target "echo 'SSH Connection Successful!'"
 
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
-          cache: 'pip'  # Cache pip dependencies
 
-      - name: Install dependencies
+      - name: Create virtual environment
         run: |
+          python -m venv .venv
+          source .venv/bin/activate
           python -m pip install --upgrade pip
-          pip install ansible-core==2.16.2 ansible-vault  # Use core version
 
-      - name: Secure SSH setup
+      - name: Install Ansible
         run: |
-          install -m 600 -D /dev/null ~/.ssh/deploy_key
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
-          ssh-keyscan -H ${{ secrets.SSH_IP_SERVER }} > ~/.ssh/known_hosts
-          cat <<EOF > ~/.ssh/config
-          Host deploy-target
-            HostName ${{ secrets.SSH_IP_SERVER }}
-            User ${{ secrets.SSH_USER }}
-            IdentityFile ~/.ssh/deploy_key
-            StrictHostKeyChecking no
-          EOF
-          chmod 600 ~/.ssh/*
-
-      - name: Verify SSH connection
-        run: ssh -T deploy-target "echo 'SSH connection successful'"
+          source .venv/bin/activate
+          pip install ansible==8.6.1 ansible-vault
 
       - name: Handle Ansible Vault
         env:
           VAULT_PASS: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
         run: |
-          # Temporarily decrypt vault
           ansible-vault decrypt \
             --vault-password-file <(printf '%s' "$VAULT_PASS") \
             ansible/group_vars/vault.yml
           
-          # Ensure re-encryption happens even if deployment fails
           function cleanup {
             ansible-vault encrypt \
               --vault-password-file <(printf '%s' "$VAULT_PASS") \
@@ -79,3 +80,4 @@ jobs:
           php artisan --version
           php artisan config:clear
           EOF
+        
