@@ -14,6 +14,22 @@
 - name: Configurer les permissions temporaires
   block:
     - name: Vérifier l'existence de l'utilisateur
+---
+- name: Créer la structure de répertoires
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0755'
+  loop:
+    - "{{ app_root }}"
+    - "{{ app_root }}/storage"
+    - "{{ app_root }}/bootstrap/cache"
+
+- name: Configurer les permissions temporaires
+  block:
+    - name: Vérifier l'existence de l'utilisateur
       command: id -u "{{ ansible_user }}"
       register: user_check
       changed_when: false
@@ -44,13 +60,13 @@
       debug:
         msg: "Key starts with: {{ SSH_PRIVATE_KEY[:30] if SSH_PRIVATE_KEY is defined else 'KEY_NOT_DEFINED' }}"
 
-    - name: Installer la clé SSH déployée
+    - name: Installer et valider la clé SSH
       block:
-        - name: Créer fichier clé SSH
+        - name: Créer fichier clé SSH (format PEM)
           copy:
             content: |
               -----BEGIN OPENSSH PRIVATE KEY-----
-              {{ SSH_PRIVATE_KEY | trim | regex_replace('\r\n', '\n') }}
+              {{ SSH_PRIVATE_KEY | trim | regex_replace('\r\n', '\n') | regex_replace(' ', '\n') }}
               -----END OPENSSH PRIVATE KEY-----
             dest: "/root/.ssh/github_actions_deploy"
             mode: '0600'
@@ -58,26 +74,30 @@
             group: root
           no_log: true
 
-        - name: Valider la clé SSH
+        - name: Convertir la clé au bon format si nécessaire
+          command: >
+            ssh-keygen -p -N "" -m PEM -f /root/.ssh/github_actions_deploy
+          when: not lookup('file', '/root/.ssh/github_actions_deploy').startswith('-----BEGIN OPENSSH PRIVATE KEY-----')
+          args:
+            creates: /root/.ssh/github_actions_deploy
+
+        - name: Vérifier la validité de la clé
           command: ssh-keygen -l -f /root/.ssh/github_actions_deploy
-          register: key_validation
+          register: key_check
           changed_when: false
           ignore_errors: yes
 
-        - name: Régénérer la clé si invalide
+        - name: Régénérer la clé si toujours invalide
           block:
-            - name: Générer une nouvelle clé SSH
+            - name: Générer nouvelle clé ED25519
               command: ssh-keygen -t ed25519 -f /root/.ssh/github_actions_deploy -N "" -q
               args:
                 creates: /root/.ssh/github_actions_deploy
 
-            - name: Appliquer les permissions
-              file:
-                path: /root/.ssh/github_actions_deploy
-                mode: '0600'
-                owner: root
-                group: root
-          when: key_validation.rc != 0
+            - name: Afficher la clé publique pour GitHub
+              debug:
+                msg: "Clé publique générée : {{ lookup('file', '/root/.ssh/github_actions_deploy.pub') }}"
+          when: key_check.rc != 0
 
       when: SSH_PRIVATE_KEY is defined
 
@@ -90,25 +110,32 @@
             IdentityFile /root/.ssh/github_actions_deploy
             IdentitiesOnly yes
             StrictHostKeyChecking no
+            PreferredAuthentications publickey
         dest: "/root/.ssh/config"
         mode: '0600'
         owner: root
         group: root
 
     - name: Tester la connexion GitHub
-      command: ssh -T git@github.com
+      command: >
+        ssh -T -o StrictHostKeyChecking=no
+        -o IdentitiesOnly=yes
+        git@github.com
       register: ssh_test
       ignore_errors: yes
       changed_when: false
 
     - debug:
-        msg: "Résultat test connexion GitHub: {{ 'Succès' if ssh_test.rc == 0 else 'Échec' }}"
+        msg: |
+          Résultat connexion GitHub:
+          Sortie: {{ ssh_test.stdout }}
+          Erreurs: {{ ssh_test.stderr }}
 
 - name: Cloner ou mettre à jour le dépôt Git
   block:
     - name: Effectuer le clone initial
       ansible.builtin.git:
-        repo: "{{ app_repo }}"
+        repo: "git@github.com:{{ app_repo }}"
         dest: "{{ app_root }}"
         version: "{{ app_branch }}"
         key_file: "/root/.ssh/github_actions_deploy"
@@ -122,7 +149,7 @@
 
     - name: Mettre à jour le dépôt existant
       ansible.builtin.git:
-        repo: "{{ app_repo }}"
+        repo: "git@github.com:{{ app_repo }}"
         dest: "{{ app_root }}"
         version: "{{ app_branch }}"
         key_file: "/root/.ssh/github_actions_deploy"
