@@ -1,6 +1,6 @@
 ---
 app_name: "crowdfunding"
-app_repo: "BastienCouder/crowdfunding-platform.git"
+app_repo: "BastienCouder/crowdfunding-platform"
 app_branch: "master"
 app_root: "/var/www/{{ app_name }}"
 app_user: "www-data"
