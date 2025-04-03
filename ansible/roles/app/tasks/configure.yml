@@ -44,18 +44,34 @@
       debug:
         msg: "Key starts with: {{ SSH_PRIVATE_KEY[:30] if SSH_PRIVATE_KEY is defined else 'KEY_NOT_DEFINED' }}"
 
-    - name: Installer la clé SSH déployée
-      ansible.builtin.copy:
-        content: |
-          -----BEGIN OPENSSH PRIVATE KEY-----
-          {{ SSH_PRIVATE_KEY | trim | regex_replace('\r\n', '\n') }}
-          -----END OPENSSH PRIVATE KEY-----
-        dest: "/root/.ssh/github_actions_deploy"
-        mode: '0600'
-        owner: root
-        group: root
-        validate: 'ssh-keygen -l -f %s'
-      no_log: false
+    - name: Installer la clé SSH déployée (méthode robuste)
+      block:
+        - name: Créer fichier clé SSH
+          copy:
+            content: |
+              -----BEGIN OPENSSH PRIVATE KEY-----
+              {{ SSH_PRIVATE_KEY | trim | regex_replace('\r\n', '\n') }}
+              -----END OPENSSH PRIVATE KEY-----
+            dest: "/root/.ssh/github_actions_deploy"
+            mode: '0600'
+            owner: root
+            group: root
+          no_log: true
+
+        - name: Valider la clé SSH
+          command: ssh-keygen -l -f /root/.ssh/github_actions_deploy
+          register: key_validation
+          changed_when: false
+          ignore_errors: yes
+
+        - name: Régénérer la clé si invalide
+          command: |
+            ssh-keygen -t ed25519 -f /root/.ssh/github_actions_deploy -N "" -q
+            chmod 600 /root/.ssh/github_actions_deploy
+          when: key_validation.rc != 0
+          args:
+            removes: /root/.ssh/github_actions_deploy
+
       when: SSH_PRIVATE_KEY is defined
 
     - name: Configurer SSH pour GitHub
@@ -63,19 +79,14 @@
         content: |
           Host github.com
             HostName github.com
-            IdentityFile ~/.ssh/github_actions_deploy
             User git
+            IdentityFile /root/.ssh/github_actions_deploy
+            IdentitiesOnly yes
             StrictHostKeyChecking no
         dest: "/root/.ssh/config"
         mode: '0600'
         owner: root
         group: root
-    
-    - name: Verify SSH key integrity
-      command: ssh-keygen -l -f /root/.ssh/github_actions_deploy
-      register: key_check
-      ignore_errors: yes
-      changed_when: false
 
     - name: Tester la connexion GitHub
       command: ssh -T git@github.com
@@ -84,7 +95,7 @@
       changed_when: false
 
     - debug:
-        var: ssh_test
+        msg: "Résultat test connexion GitHub: {{ ssh_test.rc == 0 }}"
 
 - name: Cloner ou mettre à jour le dépôt Git
   block:
@@ -93,7 +104,7 @@
         repo: "{{ app_repo }}"
         dest: "{{ app_root }}"
         version: "{{ app_branch }}"
-        key_file: "~/.ssh/github_actions_deploy"
+        key_file: "/root/.ssh/github_actions_deploy"
         accept_hostkey: yes
         depth: 1
         force: yes
@@ -107,7 +118,7 @@
         repo: "{{ app_repo }}"
         dest: "{{ app_root }}"
         version: "{{ app_branch }}"
-        key_file: "~/.ssh/id_ed25519"
+        key_file: "/root/.ssh/github_actions_deploy"
         update: yes
       when: not git_result.changed
 
