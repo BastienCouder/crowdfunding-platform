@@ -40,7 +40,7 @@
         accept_hostkey: true
         key_file: "{{ ansible_user_dir | default('/home/debian') }}/.ssh/id_ed25519"
         depth: 1 
-        register: git_result
+      register: git_result
 
     - name: Mettre à jour le dépôt existant
       ansible.builtin.git:
