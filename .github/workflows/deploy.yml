@@ -13,64 +13,69 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
-          chmod 700 ~/.ssh
-          chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H ${{ secrets.SSH_IP_SERVER }} >> ~/.ssh/known_hosts
-          echo "Host deploy-target" >> ~/.ssh/config
-          echo "  HostName ${{ secrets.SSH_IP_SERVER }}" >> ~/.ssh/config
-          echo "  User ${{ secrets.SSH_USER }}" >> ~/.ssh/config
-          echo "  IdentityFile ~/.ssh/deploy_key" >> ~/.ssh/config
-          echo "  StrictHostKeyChecking no" >> ~/.ssh/config
-          chmod 600 ~/.ssh/config
-
-      - name: Verify SSH connection
-        run: ssh deploy-target "echo 'SSH Connection Successful!'"
+        with:
+          fetch-depth: 0  # For proper git operations in Ansible
 
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
+          cache: 'pip'  # Cache pip dependencies
 
-      - name: Create virtual environment
+      - name: Install dependencies
         run: |
-          python -m venv .venv
-          source .venv/bin/activate
           python -m pip install --upgrade pip
+          pip install ansible-core==2.16.2 ansible-vault  # Use core version
 
-      - name: Install Ansible
+      - name: Secure SSH setup
         run: |
-          source .venv/bin/activate
-          pip install ansible==8.6.1 ansible-vault
+          install -m 600 -D /dev/null ~/.ssh/deploy_key
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.SSH_IP_SERVER }} > ~/.ssh/known_hosts
+          cat <<EOF > ~/.ssh/config
+          Host deploy-target
+            HostName ${{ secrets.SSH_IP_SERVER }}
+            User ${{ secrets.SSH_USER }}
+            IdentityFile ~/.ssh/deploy_key
+            StrictHostKeyChecking no
+          EOF
+          chmod 600 ~/.ssh/*
 
-      - name: Decrypt Ansible Vault
+      - name: Verify SSH connection
+        run: ssh -T deploy-target "echo 'SSH connection successful'"
+
+      - name: Handle Ansible Vault
         env:
-          ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+          VAULT_PASS: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
         run: |
-            echo "$ANSIBLE_VAULT_PASSWORD" > .vault_pass
-            chmod 600 .vault_pass
-            ansible-vault decrypt --vault-password-file .vault_pass ansible/group_vars/vault.yml
-            rm -f .vault_pass
-  
+          # Temporarily decrypt vault
+          ansible-vault decrypt \
+            --vault-password-file <(printf '%s' "$VAULT_PASS") \
+            ansible/group_vars/vault.yml
+          
+          # Ensure re-encryption happens even if deployment fails
+          function cleanup {
+            ansible-vault encrypt \
+              --vault-password-file <(printf '%s' "$VAULT_PASS") \
+              ansible/group_vars/vault.yml
+          }
+          trap cleanup EXIT
+
       - name: Run Ansible deployment
         env:
-          ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+          VAULT_PASS: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
         run: |
           ansible-playbook \
             -i ansible/inventory.ini \
-            --vault-password-file <(echo "$ANSIBLE_VAULT_PASSWORD") \
-            ansible/playbook-deploy.yml -vvv
-  
-      - name: Re-encrypt vault files
-        if: always()
-        env:
-          ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
-        run: |
-          ansible-vault encrypt --vault-password-file <(echo "$ANSIBLE_VAULT_PASSWORD") ansible/group_vars/vault.yml
+            --vault-password-file <(printf '%s' "$VAULT_PASS") \
+            ansible/playbook-deploy.yml \
+            -e "SSH_PRIVATE_KEY='${{ secrets.SSH_PRIVATE_KEY }}'" \
+            -e "CI_COMMIT_SHA=${{ github.sha }}"
 
       - name: Verify deployment
-        run: ssh deploy-target "cd /var/www/laravel && php artisan --version"
+        run: |
+          ssh deploy-target <<'EOF'
+          cd /var/www/laravel
+          php artisan --version
+          php artisan config:clear
+          EOF

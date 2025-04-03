@@ -42,13 +42,13 @@
 
     - name: Installer la clé SSH déployée
       ansible.builtin.copy:
-        content: "{{ secrets.SSH_PRIVATE_KEY | trim }}"
+        content: "{{ SSH_PRIVATE_KEY }}"
         dest: "/root/.ssh/github_actions_deploy"
+        mode: '0600'
         owner: root
         group: root
-        mode: '0600'
         validate: 'ssh-keygen -l -f %s'
-      no_log: false
+      no_log: true
 
     - name: Configurer SSH pour GitHub
       copy:
