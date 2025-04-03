@@ -44,7 +44,7 @@
       debug:
         msg: "Key starts with: {{ SSH_PRIVATE_KEY[:30] if SSH_PRIVATE_KEY is defined else 'KEY_NOT_DEFINED' }}"
 
-    - name: Installer la clé SSH déployée (méthode robuste)
+    - name: Installer la clé SSH déployée
       block:
         - name: Créer fichier clé SSH
           copy:
@@ -65,12 +65,19 @@
           ignore_errors: yes
 
         - name: Régénérer la clé si invalide
-          command: |
-            ssh-keygen -t ed25519 -f /root/.ssh/github_actions_deploy -N "" -q
-            chmod 600 /root/.ssh/github_actions_deploy
+          block:
+            - name: Générer une nouvelle clé SSH
+              command: ssh-keygen -t ed25519 -f /root/.ssh/github_actions_deploy -N "" -q
+              args:
+                creates: /root/.ssh/github_actions_deploy
+
+            - name: Appliquer les permissions
+              file:
+                path: /root/.ssh/github_actions_deploy
+                mode: '0600'
+                owner: root
+                group: root
           when: key_validation.rc != 0
-          args:
-            removes: /root/.ssh/github_actions_deploy
 
       when: SSH_PRIVATE_KEY is defined
 
@@ -95,7 +102,7 @@
       changed_when: false
 
     - debug:
-        msg: "Résultat test connexion GitHub: {{ ssh_test.rc == 0 }}"
+        msg: "Résultat test connexion GitHub: {{ 'Succès' if ssh_test.rc == 0 else 'Échec' }}"
 
 - name: Cloner ou mettre à jour le dépôt Git
   block:
