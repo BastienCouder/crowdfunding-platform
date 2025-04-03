@@ -34,11 +34,11 @@
   block:
     - name: Effectuer le clone initial
       ansible.builtin.git:
-        repo: "git@github.com:{{ app_repo }}.git"
+        repo: "git@github.com:{{ app_repo }}"
         dest: "{{ app_root }}"
         version: "{{ app_branch }}"
         accept_hostkey: true
-        key_file: "~/.ssh/id_ed25519"
+        key_file: "/home/debian/.ssh/id_ed25519" 
       register: git_result
       retries: 3
       delay: 10
