@@ -1,14 +1,19 @@
----
+- name: Vérifier si PHP est déjà installé
+  stat:
+    path: "/usr/bin/php"
+  register: php_installed
 
-- name: Add PHP repository
+- name: Ajouter le dépôt PHP si nécessaire
   apt_repository:
     repo: "ppa:ondrej/php"
     state: present
-  when: php_specific_version | default(false)
+  when: 
+    - php_specific_version | default(false)
+    - not php_installed.stat.exists
 
-- name: Install PHP packages
-  apt:
-    pkg:
+- name: Définir les paquets PHP à installer
+  set_fact:
+    php_packages:
       - git
       - unzip
       - "{{ 'php' + php_version if php_specific_version | default(false) else 'php' }}"
@@ -18,4 +23,10 @@
       - php-xml
       - php-curl
       - php-bcmath
+
+- name: Installer les paquets PHP
+  apt:
+    name: "{{ php_packages }}"
     state: present
+    update_cache: yes
+  when: not php_installed.stat.exists

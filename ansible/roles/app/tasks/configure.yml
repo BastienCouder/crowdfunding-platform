@@ -52,7 +52,7 @@
         owner: root
         group: root
         validate: 'ssh-keygen -l -f %s'
-      no_log: true
+      no_log: false
       when: SSH_PRIVATE_KEY is defined
 
     - name: Configurer SSH pour GitHub
