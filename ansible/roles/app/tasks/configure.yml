@@ -14,22 +14,6 @@
 - name: Configurer les permissions temporaires
   block:
     - name: Vérifier l'existence de l'utilisateur
----
-- name: Créer la structure de répertoires
-  file:
-    path: "{{ item }}"
-    state: directory
-    owner: "{{ app_user }}"
-    group: "{{ app_group }}"
-    mode: '0755'
-  loop:
-    - "{{ app_root }}"
-    - "{{ app_root }}/storage"
-    - "{{ app_root }}/bootstrap/cache"
-
-- name: Configurer les permissions temporaires
-  block:
-    - name: Vérifier l'existence de l'utilisateur
       command: id -u "{{ ansible_user }}"
       register: user_check
       changed_when: false
