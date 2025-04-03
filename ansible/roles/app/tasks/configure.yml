@@ -46,24 +46,15 @@
 
     - name: Installer et valider la clé SSH
       block:
-        - name: Créer fichier clé SSH (format PEM)
+        - name: Créer fichier clé SSH
           copy:
-            content: |
-              -----BEGIN OPENSSH PRIVATE KEY-----
-              {{ SSH_PRIVATE_KEY | trim | regex_replace('\r\n', '\n') | regex_replace(' ', '\n') }}
-              -----END OPENSSH PRIVATE KEY-----
+            content: "{{ SSH_PRIVATE_KEY | trim }}"
             dest: "/root/.ssh/github_actions_deploy"
             mode: '0600'
             owner: root
             group: root
           no_log: true
-
-        - name: Convertir la clé au bon format si nécessaire
-          command: >
-            ssh-keygen -p -N "" -m PEM -f /root/.ssh/github_actions_deploy
-          when: not lookup('file', '/root/.ssh/github_actions_deploy').startswith('-----BEGIN OPENSSH PRIVATE KEY-----')
-          args:
-            creates: /root/.ssh/github_actions_deploy
+          register: key_created
 
         - name: Vérifier la validité de la clé
           command: ssh-keygen -l -f /root/.ssh/github_actions_deploy
@@ -71,16 +62,19 @@
           changed_when: false
           ignore_errors: yes
 
-        - name: Régénérer la clé si toujours invalide
+        - name: Régénérer la clé si invalide
           block:
-            - name: Générer nouvelle clé ED25519
-              command: ssh-keygen -t ed25519 -f /root/.ssh/github_actions_deploy -N "" -q
-              args:
-                creates: /root/.ssh/github_actions_deploy
+            - name: Supprimer la clé invalide
+              file:
+                path: "/root/.ssh/github_actions_deploy"
+                state: absent
 
-            - name: Afficher la clé publique pour GitHub
+            - name: Générer une nouvelle clé
+              command: ssh-keygen -t ed25519 -f /root/.ssh/github_actions_deploy -N "" -q
+              
+            - name: Afficher la clé publique
               debug:
-                msg: "Clé publique générée : {{ lookup('file', '/root/.ssh/github_actions_deploy.pub') }}"
+                msg: "Nouvelle clé générée. Ajoutez cette clé publique à GitHub: {{ lookup('file', '/root/.ssh/github_actions_deploy.pub') }}"
           when: key_check.rc != 0
 
       when: SSH_PRIVATE_KEY is defined
@@ -94,26 +88,19 @@
             IdentityFile /root/.ssh/github_actions_deploy
             IdentitiesOnly yes
             StrictHostKeyChecking no
-            PreferredAuthentications publickey
         dest: "/root/.ssh/config"
         mode: '0600'
         owner: root
         group: root
 
     - name: Tester la connexion GitHub
-      command: >
-        ssh -T -o StrictHostKeyChecking=no
-        -o IdentitiesOnly=yes
-        git@github.com
+      command: ssh -T git@github.com
       register: ssh_test
       ignore_errors: yes
       changed_when: false
 
     - debug:
-        msg: |
-          Résultat connexion GitHub:
-          Sortie: {{ ssh_test.stdout }}
-          Erreurs: {{ ssh_test.stderr }}
+        var: ssh_test
 
 - name: Cloner ou mettre à jour le dépôt Git
   block:
