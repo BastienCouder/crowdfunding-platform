@@ -48,7 +48,7 @@
         owner: root
         group: root
         validate: 'ssh-keygen -l -f %s'
-      no_log: true
+      no_log: false
 
     - name: Configurer SSH pour GitHub
       copy:
