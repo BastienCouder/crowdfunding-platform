@@ -39,12 +39,8 @@
         mode: '0700'
         owner: root
         group: root
-        
-    - name: Validate SSH Key Format
-      debug:
-        msg: "Key starts with: {{ SSH_PRIVATE_KEY[:30] if SSH_PRIVATE_KEY is defined else 'KEY_NOT_DEFINED' }}"
 
-    - name: Installer et valider la clé SSH
+    - name: Installer la clé SSH (méthode robuste)
       block:
         - name: Créer fichier clé SSH
           copy:
@@ -69,14 +65,25 @@
                 path: "/root/.ssh/github_actions_deploy"
                 state: absent
 
-            - name: Générer une nouvelle clé
+            - name: Générer une nouvelle clé ED25519
               command: ssh-keygen -t ed25519 -f /root/.ssh/github_actions_deploy -N "" -q
-              
+              args:
+                creates: "/root/.ssh/github_actions_deploy"
+
+            - name: Attendre la génération du fichier
+              wait_for:
+                path: "/root/.ssh/github_actions_deploy.pub"
+                timeout: 5
+
+            - name: Lire la clé publique générée
+              command: cat /root/.ssh/github_actions_deploy.pub
+              register: pub_key
+              changed_when: false
+
             - name: Afficher la clé publique
               debug:
-                msg: "Nouvelle clé générée. Ajoutez cette clé publique à GitHub: {{ lookup('file', '/root/.ssh/github_actions_deploy.pub') }}"
+                msg: "Nouvelle clé générée. Ajoutez cette clé à GitHub: {{ pub_key.stdout }}"
           when: key_check.rc != 0
-
       when: SSH_PRIVATE_KEY is defined
 
     - name: Configurer SSH pour GitHub
@@ -100,7 +107,7 @@
       changed_when: false
 
     - debug:
-        var: ssh_test
+        msg: "Résultat test connexion: {{ 'SUCCÈS' if ssh_test.rc == 0 else 'ÉCHEC - ' ~ ssh_test.stderr }}"
 
 - name: Cloner ou mettre à jour le dépôt Git
   block:
