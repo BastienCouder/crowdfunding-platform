@@ -52,7 +52,7 @@
         owner: root
         group: root
         validate: 'ssh-keygen -l -f %s'
-      no_log: false
+      no_log: true
       when: SSH_PRIVATE_KEY is defined
 
     - name: Configurer SSH pour GitHub
@@ -81,7 +81,7 @@
       changed_when: false
 
     - debug:
-      var: ssh_test
+        var: ssh_test
 
 - name: Cloner ou mettre à jour le dépôt Git
   block:
