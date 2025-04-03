@@ -4,9 +4,9 @@
     <section class="relative mb-12">
         <div class="relative rounded-lg mx-6 overflow-hidden">
             <picture>
-                <source srcset="{{ asset('images/eco-community.webp') }}" type="image/webp">
-                <source srcset="{{ asset('images/eco-community.jpg') }}" type="image/jpeg">
-                <img src="{{ asset('images/eco-community.jpg') }}" 
+                <source srcset="{{ asset('images/hands.webp') }}" type="image/webp">
+                <source srcset="{{ asset('images/hands.jpg') }}" type="image/jpeg">
+                <img src="{{ asset('images/hands.jpg') }}" 
                      alt="Communauté locale plantant des arbres" 
                      loading="eager"
                      width="1200"
@@ -121,9 +121,8 @@
         <div class="relative py-12 px-4 max-w-4xl mx-auto">
             <!-- Images de fond éco-responsables -->
             <picture class="absolute left-0 top-1/4 w-28 h-28 hidden md:block">
-                <source srcset="{{ asset('images/local-farm.webp') }}" type="image/webp">
-                <source srcset="{{ asset('images/local-farm.jpg') }}" type="image/jpeg">
-                <img src="{{ asset('images/local-farm.jpg') }}" 
+                <source srcset="{{ asset('images/ferme.jpg') }}" type="image/jpeg">
+                <img src="{{ asset('images/ferme.jpg') }}" 
                      alt="Ferme locale" 
                      loading="lazy"
                      width="112"
@@ -133,9 +132,8 @@
             </picture>
 
             <picture class="absolute right-0 top-1/4 w-28 h-28 hidden md:block">
-                <source srcset="{{ asset('images/solar-panel.webp') }}" type="image/webp">
-                <source srcset="{{ asset('images/solar-panel.jpg') }}" type="image/jpeg">
-                <img src="{{ asset('images/solar-panel.jpg') }}" 
+                <source srcset="{{ asset('images/panneau.jpg') }}" type="image/jpeg">
+                <img src="{{ asset('images/panneau.jpg') }}" 
                      alt="Panneaux solaires" 
                      loading="lazy"
                      width="112"
@@ -145,9 +143,9 @@
             </picture>
 
             <picture class="absolute left-28 bottom-0 w-28 h-28 hidden md:block">
-                <source srcset="{{ asset('images/recycling.webp') }}" type="image/webp">
-                <source srcset="{{ asset('images/recycling.jpg') }}" type="image/jpeg">
-                <img src="{{ asset('images/recycling.jpg') }}" 
+                <source srcset="{{ asset('images/bottle.webp') }}" type="image/webp">
+                <source srcset="{{ asset('images/bottle.jpg') }}" type="image/jpeg">
+                <img src="{{ asset('images/bottle.jpg') }}" 
                      alt="Centre de recyclage" 
                      loading="lazy"
                      width="112"
@@ -157,9 +155,8 @@
             </picture>
 
             <picture class="absolute right-28 bottom-0 w-28 h-28 hidden md:block">
-                <source srcset="{{ asset('images/community-garden.webp') }}" type="image/webp">
-                <source srcset="{{ asset('images/community-garden.jpg') }}" type="image/jpeg">
-                <img src="{{ asset('images/community-garden.jpg') }}" 
+                <source srcset="{{ asset('images/jardin.jpg') }}" type="image/jpeg">
+                <img src="{{ asset('images/jardin.jpg') }}" 
                      alt="Jardin communautaire" 
                      loading="lazy"
                      width="112"

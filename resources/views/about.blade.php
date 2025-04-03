@@ -4,9 +4,9 @@
     <section class="relative mb-12">
         <div class="relative rounded-lg mx-6 overflow-hidden">
         <picture>
-            <source srcset="{{ asset('images/eco-hands.webp') }}" type="image/webp">
-            <source srcset="{{ asset('images/eco-hands.jpg') }}" type="image/jpeg">
-            <img src="{{ asset('images/eco-hands.jpg') }}" 
+            <source srcset="{{ asset('images/hands.webp') }}" type="image/webp">
+            <source srcset="{{ asset('images/hands.jpg') }}" type="image/jpeg">
+            <img src="{{ asset('images/hands.webp') }}" 
                  alt="Mains plantant un arbre dans une communauté locale" 
                  loading="eager"
                  width="1200"
@@ -79,7 +79,7 @@
                     <p class="text-gray-600">Notre particularité ? Un comité d'éthique régional valide chaque projet, et nos outils de suivi permettent de visualiser l'impact concret de votre contribution dans votre quartier.</p>
                 </div>
                 <div class="relative">
-                    <img src="{{ asset('images/local-map.jpg') }}" alt="Carte des projets financés dans la région" class="rounded-xl shadow-md w-full h-auto">
+                    <img src="{{ asset('images/ampoule.webp') }}" alt="Carte des projets financés dans la région" class="rounded-xl shadow-md w-full h-auto">
                     <div class="absolute -bottom-6 -left-6 bg-lime-300 text-fg p-4 rounded-lg shadow-lg">
                         <p class="text-2xl font-bold">287</p>
                         <p class="text-sm">Projets locaux financés</p>
@@ -166,7 +166,7 @@
                     <div class="relative z-10">
                         <p class="text-gray-600 mb-6 italic">Grâce à 142 contributeurs locaux, nous avons pu créer une recyclerie qui a déjà donné une seconde vie à 12 tonnes d'objets !</p>
                         <div class="flex items-center">
-                            <img src="{{ asset('images/testimonial-local-1.jpg') }}" alt="Jean M." class="w-12 h-12 rounded-full mr-4">
+                            <img src="{{ asset('images/profile1.jpg') }}" alt="Jean M." class="w-12 h-12 object-cover rounded-full mr-4">
                             <div>
                                 <p class="font-bold text-gray-900">Jean M.</p>
                                 <p class="text-sm text-gray-500">Bénévole, La Recyclerie Verte</p>
@@ -181,9 +181,9 @@
                     <div class="relative z-10">
                         <p class="text-gray-600 mb-6 italic">Notre coopérative énergétique a été financée à 120% par des voisins. Aujourd'hui, 80 foyers consomment une électricité 100% locale.</p>
                         <div class="flex items-center">
-                            <img src="{{ asset('images/testimonial-local-2.jpg') }}" alt="Élodie T." class="w-12 h-12 rounded-full mr-4">
+                            <img src="{{ asset('images/profile3.jpg') }}" alt="Laura T." class="w-12 h-12 object-cover rounded-full mr-4">
                             <div>
-                                <p class="font-bold text-gray-900">Élodie T.</p>
+                                <p class="font-bold text-gray-900">Laura T.</p>
                                 <p class="text-sm text-gray-500">Présidente, Énergie Commune</p>
                             </div>
                         </div>
@@ -196,9 +196,9 @@
                     <div class="relative z-10">
                         <p class="text-gray-600 mb-6 italic">Avec seulement 15€ par mois, je soutiens 3 projets dans mon quartier. Je reçois chaque trimestre un rapport d'impact personnalisé.</p>
                         <div class="flex items-center">
-                            <img src="{{ asset('images/testimonial-local-3.jpg') }}" alt="Fatima K." class="w-12 h-12 rounded-full mr-4">
+                            <img src="{{ asset('images/profile2.jpg') }}" alt="Elodie Z." class="w-12 h-12 object-cover rounded-full mr-4">
                             <div>
-                                <p class="font-bold text-gray-900">Fatima K.</p>
+                                <p class="font-bold text-gray-900">Elodie Z.</p>
                                 <p class="text-sm text-gray-500">Contributrice depuis 2021</p>
                             </div>
                         </div>

@@ -46,7 +46,6 @@
                             <option value="">Tous les statuts</option>
                             <option value="active">Actifs</option>
                             <option value="completed">Terminés</option>
-                            <option value="upcoming">À venir</option>
                         </select>
                         
                         <!-- Category Filter -->
@@ -103,7 +102,7 @@
                 <p class="text-lg text-gray-600 mb-8">
                     Lancez votre propre campagne de financement et donnez vie à vos idées grâce à notre communauté.
                 </p>
-                <a href="#" class="inline-block bg-lime-300 hover:bg-lime-400 text-fg font-medium px-8 py-3 rounded-lg transition duration-300">
+                <a href="{{ route('projects.create') }}" class="inline-block bg-lime-300 hover:bg-lime-400 text-fg font-medium px-8 py-3 rounded-lg transition duration-300">
                     Créer un projet
                 </a>
             </div>

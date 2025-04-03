@@ -141,7 +141,7 @@
             </div>
             
             <div class="relative">
-                <img src="{{ asset('images/project-creator.jpg') }}" alt="Porteur de projet" class="rounded-xl shadow-md w-full h-auto">
+                <img src="{{ asset('images/projets.jpg') }}" alt="Porteur de projet" class="rounded-xl shadow-md w-full h-auto">
                 <div class="absolute -bottom-6 -right-6 bg-lime-300 text-fg p-6 rounded-lg shadow-lg">
                     <p class="text-2xl font-bold">93%</p>
                     <p class="text-sm">des projets bien préparés atteignent leur objectif</p>
@@ -162,7 +162,7 @@
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div class="order-2 md:order-1">
-                <img src="{{ asset('images/contributor.jpg') }}" alt="Contributeur" class="rounded-xl shadow-md w-full h-auto">
+                <img src="{{ asset('images/plant.webp') }}" alt="Contributeur" class="rounded-xl shadow-md w-full h-auto">
             </div>
             
             <div class="order-1 md:order-2">
