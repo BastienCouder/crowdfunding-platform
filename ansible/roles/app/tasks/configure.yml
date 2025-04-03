@@ -34,15 +34,19 @@
   block:
     - name: Créer le répertoire .ssh
       file:
-        path: "~/.ssh"
+        path: "/root/.ssh"
         state: directory
         mode: '0700'
+        owner: root
+        group: root
 
     - name: Installer la clé SSH déployée
       copy:
-        content: "{{ secrets.SSH_PRIVATE_KEY }}"
-        dest: "~/.ssh/github_actions_deploy"
+        content: "{{ secrets.SSH_PRIVATE_KEY | trim }}"
+        dest: "/root/.ssh/github_actions_deploy"
         mode: '0600'
+        owner: root
+        group: root
       no_log: true
 
     - name: Configurer SSH pour GitHub
@@ -53,8 +57,10 @@
             IdentityFile ~/.ssh/github_actions_deploy
             User git
             StrictHostKeyChecking no
-        dest: "~/.ssh/config"
+        dest: "/root/.ssh/config"
         mode: '0600'
+        owner: root
+        group: root
 
 - name: Cloner ou mettre à jour le dépôt Git
   block:
