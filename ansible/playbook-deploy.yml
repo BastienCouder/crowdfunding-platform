@@ -1,7 +1,6 @@
 ---
 - name: Déploiement local complet
-  hosts: localhost
-  connection: local
+  hosts: master
   become: true
   tasks:
     - include_vars: group_vars/all.yml
