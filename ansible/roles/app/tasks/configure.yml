@@ -38,6 +38,7 @@
         dest: "{{ app_root }}"
         version: "{{ app_branch }}"
         accept_hostkey: true
+        key_file: "~/.ssh/id_ed25519"
       register: git_result
       retries: 3
       delay: 10
