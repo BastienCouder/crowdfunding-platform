@@ -46,7 +46,10 @@
 
     - name: Installer la clé SSH déployée
       ansible.builtin.copy:
-        content: "{{ SSH_PRIVATE_KEY | trim }}"
+        content: |
+          -----BEGIN OPENSSH PRIVATE KEY-----
+          {{ SSH_PRIVATE_KEY | trim | regex_replace('\r\n', '\n') }}
+          -----END OPENSSH PRIVATE KEY-----
         dest: "/root/.ssh/github_actions_deploy"
         mode: '0600'
         owner: root
