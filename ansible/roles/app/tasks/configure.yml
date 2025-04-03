@@ -32,17 +32,16 @@
 
 - name: Cloner ou mettre à jour le dépôt Git
   block:
-    - name: Effectuer le clone initial
+    - name: Cloner le dépôt Git
       ansible.builtin.git:
-        repo: "git@github.com:{{ app_repo }}"
+        repo: "git@github.com:BastienCouder/crowdfunding-platform.git"
         dest: "{{ app_root }}"
         version: "{{ app_branch }}"
         accept_hostkey: true
-        key_file: "/home/debian/.ssh/id_ed25519" 
-      register: git_result
-      retries: 3
-      delay: 10
-      until: git_result is succeeded
+        key_file: "/home/debian/.ssh/id_ed25519"
+        # Ajoutez ces deux paramètres cruciaux :
+        become_user: debian
+        become: true
 
     - name: Mettre à jour le dépôt existant
       ansible.builtin.git:
