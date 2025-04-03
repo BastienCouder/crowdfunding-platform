@@ -38,17 +38,19 @@
         dest: "{{ app_root }}"
         version: "{{ app_branch }}"
         accept_hostkey: true
-        key_file: "/home/debian/.ssh/id_ed25519"
-        become_user: debian
-        become: true
+        key_file: "{{ ansible_user_dir | default('/home/debian') }}/.ssh/id_ed25519"
+        depth: 1 
+        register: git_result
 
     - name: Mettre à jour le dépôt existant
       ansible.builtin.git:
-        repo: "https://github.com/{{ app_repo }}"
+        repo: "git@github.com:BastienCouder/crowdfunding-platform.git"
         dest: "{{ app_root }}"
         version: "{{ app_branch }}"
         update: yes
-      when: not git_result.changed
+        accept_hostkey: true
+        key_file: "{{ ansible_user_dir | default('/home/debian') }}/.ssh/id_ed25519"
+      when: git_result is defined and not git_result.changed
 
 - name: Restaurer les permissions de l'application
   file:
