@@ -1,4 +1,4 @@
-<footer class="bg-black text-white py-8 mb-12 rounded-xl">
+<footer class="bg-black text-white py-8 rounded-xl">
   <div class="container mx-auto px-6">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
           <!-- Logo et Informations -->
