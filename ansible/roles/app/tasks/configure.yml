@@ -51,6 +51,7 @@
         mode: '0600'
         owner: root
         group: root
+        validate: 'ssh-keygen -l -f %s'
       no_log: false
       when: SSH_PRIVATE_KEY is defined
 
@@ -66,6 +67,21 @@
         mode: '0600'
         owner: root
         group: root
+    
+    - name: Verify SSH key integrity
+      command: ssh-keygen -l -f /root/.ssh/github_actions_deploy
+      register: key_check
+      ignore_errors: yes
+      changed_when: false
+
+    - name: Tester la connexion GitHub
+      command: ssh -T git@github.com
+      register: ssh_test
+      ignore_errors: yes
+      changed_when: false
+
+    - debug:
+      var: ssh_test
 
 - name: Cloner ou mettre à jour le dépôt Git
   block:
