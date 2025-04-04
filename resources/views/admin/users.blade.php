@@ -13,7 +13,6 @@
         </div>
 
         <!-- Admin Navigation -->
-         <!-- Admin Navigation -->
          <div class="mb-6">
             <div class="flex space-x-4">
             <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md font-medium hover:bg-gray-50 flex items-center">
@@ -93,7 +92,7 @@
                                 {{ $user->email }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                @if($user->is_admin)
+                                @if($user->role === 'admin')
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
                                         Administrateur
                                     </span>
@@ -163,25 +162,30 @@
                             <div class="mt-4 space-y-4">
                                 <div>
                                     <label for="user-name" class="block text-sm font-medium text-gray-700">Nom</label>
-                                    <input type="text" name="name" id="user-name" class="mt-1 focus:ring-lime-500 focus:border-lime-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    <input type="text" name="name" id="user-name" class="mt-1 focus:ring-lime-500 focus:border-lime-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required>
                                 </div>
                                 <div>
                                     <label for="user-email" class="block text-sm font-medium text-gray-700">Email</label>
-                                    <input type="email" name="email" id="user-email" class="mt-1 focus:ring-lime-500 focus:border-lime-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    <input type="email" name="email" id="user-email" class="mt-1 focus:ring-lime-500 focus:border-lime-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required>
                                 </div>
                                 <div>
-                                    <label for="user-password" class="block text-sm font-medium text-gray-700">Mot de passe</label>
-                                    <input type="password" name="password" id="user-password" class="mt-1 focus:ring-lime-500 focus:border-lime-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                </div>
+    <label for="user-password" class="block text-sm font-medium text-gray-700">Mot de passe</label>
+    <input type="password" name="password" id="user-password" 
+           class="mt-1 focus:ring-lime-500 focus:border-lime-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+           minlength="8">
+</div>
+<div>
+    <label for="user-password-confirmation" class="block text-sm font-medium text-gray-700">Confirmer le mot de passe</label>
+    <input type="password" name="password_confirmation" id="user-password-confirmation" 
+           class="mt-1 focus:ring-lime-500 focus:border-lime-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+           minlength="8">
+</div>
                                 <div>
-                                    <label for="user-password-confirmation" class="block text-sm font-medium text-gray-700">Confirmer le mot de passe</label>
-                                    <input type="password" name="password_confirmation" id="user-password-confirmation" class="mt-1 focus:ring-lime-500 focus:border-lime-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                </div>
-                                <div class="flex items-center">
-                                    <input id="user-is-admin" name="is_admin" type="checkbox" class="h-4 w-4 text-lime-600 focus:ring-lime-500 border-gray-300 rounded">
-                                    <label for="user-is-admin" class="ml-2 block text-sm text-gray-900">
-                                        Administrateur
-                                    </label>
+                                    <label for="user-role" class="block text-sm font-medium text-gray-700">Rôle</label>
+                                    <select name="role" id="user-role" class="mt-1 focus:ring-lime-500 focus:border-lime-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required>
+                                        <option value="user">Utilisateur</option>
+                                        <option value="admin">Administrateur</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -269,7 +273,7 @@
                 const userId = button.getAttribute('data-user-id');
                 userFormTitle.textContent = 'Modifier l\'utilisateur';
                 userForm.action = `/admin/users/${userId}`;
-                userFormMethod.innerHTML = '<input type="hidden" name="_method" value="PATCH">';
+                userFormMethod.innerHTML = '<input type="hidden" name="_method" value="PUT">';
                 document.getElementById('user-password').required = false;
                 document.getElementById('user-password-confirmation').required = false;
                 
@@ -338,6 +342,65 @@
                 timeout = setTimeout(later, wait);
             };
         }
+
+            // Vérification du mot de passe
+    const passwordField = document.getElementById('user-password');
+    const confirmPasswordField = document.getElementById('user-password-confirmation');
+    const passwordError = document.createElement('div');
+    passwordError.className = 'text-red-500 text-xs mt-1 hidden';
+    passwordError.id = 'password-error';
+    confirmPasswordField.parentNode.appendChild(passwordError);
+
+    function validatePassword() {
+        const password = passwordField.value;
+        const confirmPassword = confirmPasswordField.value;
+
+        // Vérification de la longueur
+        if (password.length > 0 && password.length < 8) {
+            passwordError.textContent = 'Le mot de passe doit contenir au moins 8 caractères';
+            passwordError.classList.remove('hidden');
+            return false;
+        }
+
+        // Vérification de la correspondance
+        if (password !== confirmPassword && confirmPassword.length > 0) {
+            passwordError.textContent = 'Les mots de passe ne correspondent pas';
+            passwordError.classList.remove('hidden');
+            return false;
+        }
+
+        // Si tout est bon
+        passwordError.classList.add('hidden');
+        return true;
+    }
+
+    // Écouteurs d'événements
+    passwordField.addEventListener('input', validatePassword);
+    confirmPasswordField.addEventListener('input', validatePassword);
+
+    // Validation avant soumission
+    userForm.addEventListener('submit', function(e) {
+        // Pour la création, le mot de passe est obligatoire
+        if (userFormTitle.textContent === 'Ajouter un utilisateur') {
+            if (passwordField.value.length < 8) {
+                e.preventDefault();
+                passwordError.textContent = 'Le mot de passe doit contenir au moins 8 caractères';
+                passwordError.classList.remove('hidden');
+                return;
+            }
+        }
+
+        if (!validatePassword()) {
+            e.preventDefault();
+            return;
+        }
+
+        // Si on est en mode édition et que le mot de passe est vide, on le retire du formulaire
+        if (userFormTitle.textContent === 'Modifier l\'utilisateur' && passwordField.value === '') {
+            passwordField.removeAttribute('name');
+            confirmPasswordField.removeAttribute('name');
+        }
+    });
     });
 </script>
 

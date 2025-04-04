@@ -13,6 +13,7 @@ class HomeController extends Controller
     {
         $endingSoonProjects = Project::where('is_draft', false)
             ->whereDate('end_date', '>=', now())
+            ->whereStatus('approved')
             ->orderBy('end_date', 'asc')
             ->take(3)
             ->with(['user', 'images'])

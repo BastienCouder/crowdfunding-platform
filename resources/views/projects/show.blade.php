@@ -299,16 +299,6 @@
                                                 @endif
                                             </div>
                                         </div>
-                                        
-                                        <div class="mt-6">
-                                            <form action="{{ route('contributions.store', $project) }}" method="POST">
-                                                @csrf
-                                                <input type="hidden" name="amount" value="{{ $tier->amount }}">
-                                                <button type="submit" class="w-full bg-lime-500 hover:bg-lime-600 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                                                    Contribuer à ce palier
-                                                </button>
-                                            </form>
-                                        </div>
                                     </div>
                                 @endforeach
                             </div>
@@ -446,8 +436,9 @@
                             
                             <!-- Formulaire de commentaire -->
                             <div class="bg-gray-50 rounded-xl p-6 mb-8">
-                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Laisser un commentaire</h3>
-                                <form action="{{ route('comments.store', $project) }}" method="POST">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">Laisser un commentaire</h3>
+    @if($project->status === 'approved')
+        <form action="{{ route('comments.store', $project) }}" method="POST">
                                     @csrf
                                     <div class="mb-4">
                                         <textarea name="content" rows="4" class="w-full border-gray-200 rounded-xl shadow-sm focus:border-lime-500 focus:ring-lime-500" placeholder="Partagez vos pensées sur ce projet..." required></textarea>
@@ -461,7 +452,15 @@
                                         </button>
                                     </div>
                                 </form>
-                            </div>
+                                @else
+        <div class="bg-gray-100 rounded-lg p-4 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.008v.008H12v-.008z" />
+            </svg>
+            <p class="text-gray-600">Les commentaires sont désactivés tant que le projet n'est pas approuvé</p>
+        </div>
+    @endif
+</div>
                             
                             <!-- Liste des commentaires -->
                             @if(count($project->comments) > 0)
@@ -477,20 +476,6 @@
                                             </div>
                                             <div class="prose prose-sm max-w-none">
                                                 <p class="text-gray-700">{{ $comment->content }}</p>
-                                            </div>
-                                            <div class="mt-4 flex items-center space-x-4">
-                                                <button class="text-gray-500 hover:text-lime-600 flex items-center text-sm">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.633 10.5c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75A2.25 2.25 0 0116.5 4.5c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23H5.904M14.25 9h2.25M5.904 18.75c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 01-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 10.203 4.167 9.75 5 9.75h1.053c.472 0 .745.556.5.96a8.958 8.958 0 00-1.302 4.665c0 1.194.232 2.333.654 3.375z" />
-                                                    </svg>
-                                                    J'aime
-                                                </button>
-                                                <button class="text-gray-500 hover:text-lime-600 flex items-center text-sm">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
-                                                    </svg>
-                                                    Répondre
-                                                </button>
                                             </div>
                                         </div>
                                     @endforeach
@@ -585,20 +570,15 @@
                         </div>
                         
                         <!-- Formulaire de contribution -->
+                        @if($project->status === 'approved')
                         <form action="{{ route('contributions.store', $project) }}" method="POST" class="space-y-4 mb-6">
                             @csrf
                             <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <span class="text-gray-500">€</span>
-                                </div>
-                                <input type="number" name="amount" class="block w-full pl-8 pr-12 py-3 border border-gray-200 rounded-xl focus:ring-lime-500 focus:border-lime-500" placeholder="Montant" required>
-                                <div class="absolute inset-y-0 right-0 flex items-center">
-                                    <label for="currency" class="sr-only">Devise</label>
-                                    <select id="currency" name="currency" class="h-full py-0 pl-2 pr-7 border-transparent bg-transparent text-gray-500 sm:text-sm rounded-r-xl">
-                                        <option>EUR</option>
-                                    </select>
-                                </div>
-                            </div>
+    <input type="number" name="amount" class="block w-full pr-8 py-3 border border-gray-200 rounded-xl focus:ring-lime-500 focus:border-lime-500 appearance-none" placeholder="Montant" required>
+    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+        <span class="text-gray-500">€</span>
+    </div>
+</div>
                             
                             <div class="flex items-center">
     <input id="anonymous" name="anonymous" type="checkbox" value="1" class="h-4 w-4 text-lime-600 border-gray-300 rounded">
@@ -613,7 +593,15 @@
                                 Contribuer maintenant
                             </button>
                         </form>
-                        
+                        @else
+    <div class="bg-gray-100 rounded-xl p-6 mb-6 text-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.008v.008H12v-.008z" />
+        </svg>
+        <p class="text-gray-600 font-medium">Les contributions ne sont pas encore ouvertes pour ce projet</p>
+        <p class="text-sm text-gray-500 mt-1">Le projet doit être approuvé par notre équipe avant de pouvoir recevoir des contributions.</p>
+    </div>
+@endif
                         <!-- Montants prédéfinis -->
                         <div class="mb-6">
                             <h3 class="text-sm font-medium text-gray-700 mb-3">Montants suggérés</h3>
@@ -871,6 +859,17 @@
         .scroll-mt-16 {
             scroll-margin-top: 5rem;
         }
+    /* Supprime les flèches sur les navigateurs WebKit */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Supprime les flèches sur Firefox */
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
     </style>
 </x-app-layout>
 

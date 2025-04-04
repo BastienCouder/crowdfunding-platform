@@ -53,7 +53,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/projets/{project}', [ProjectController::class, 'show'])->name('projects.show');
     
     Route::middleware(['auth', 'can:access-admin'])->prefix('admin')->name('admin.')->group(function () {
-        
         Route::get('/', [AdminController::class, 'index'])->name('dashboard');
         Route::get('/projects', [AdminController::class, 'projects'])->name('projects');
         Route::get('/users', [AdminController::class, 'users'])->name('users');
@@ -62,7 +61,7 @@ Route::middleware('auth')->group(function () {
       
         Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
         Route::get('/users/{user}/edit', [AdminController::class, 'editUser'])->name('users.edit');
-        Route::patch('/users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
+        Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
         Route::delete('/users/{user}', [AdminController::class, 'destroyUser'])->name('users.destroy');
     });
 });

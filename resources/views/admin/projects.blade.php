@@ -199,10 +199,6 @@
                                         <option value="rejected">Rejeté</option>
                                     </select>
                                 </div>
-                                <div class="mb-4">
-                                    <label for="status-comment" class="block text-sm font-medium text-gray-700">Commentaire (optionnel)</label>
-                                    <textarea id="status-comment" name="comment" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-lime-500 focus:border-lime-500 sm:text-sm"></textarea>
-                                </div>
                             </div>
                         </div>
                     </div>
