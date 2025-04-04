@@ -20,6 +20,68 @@ class ContributionController extends Controller
         return view('contribution.index', $data);
     }
 
+    public function store(Request $request, Project $project)
+    {
+        // Validation des données
+        $validated = $request->validate([
+            'amount' => 'required|numeric|min:1',
+            'tier_index' => 'nullable|integer|min:0',
+            'anonymous' => 'sometimes|boolean',
+        ]);
+    
+        // Vérification que le projet peut recevoir des contributions
+        if ($project->end_date < now() || $project->status !== 'approved') {
+            return back()->with('error', 'Ce projet ne peut plus recevoir de contributions.');
+        }
+
+        try {
+            // Création de la contribution
+            $contribution = Contribution::create([
+                'user_id' => auth()->id(),
+                'project_id' => $project->id,
+                'amount' => $validated['amount'],
+                'anonymous' => $validated['anonymous'] ?? false,
+            ]);
+
+            // Mise à jour du montant collecté du projet
+            $project->increment('current_amount', $validated['amount']);
+    
+            // Vérification si le projet a atteint son objectif
+            if ($project->current_amount >= $project->goal_amount) {
+                $project->update(['status' => 'funded']);
+            }
+            dd($contribution);
+            return redirect()
+                ->route('projects.show', $project)
+                ->with('success', 'Merci pour votre contribution !');
+    
+        } catch (\Exception $e) {
+            return back()
+                ->withInput()
+                ->with('error', 'Une erreur est survenue lors de votre contribution.');
+        }
+    }
+    
+    // Méthode pour récupérer la récompense du palier
+    private function getTierReward(Project $project, $tierIndex)
+    {
+        if ($tierIndex === null || !isset($project->funding_tiers[$tierIndex])) {
+            return null;
+        }
+    
+        return $project->funding_tiers[$tierIndex]['title'] ?? null;
+    }
+    
+    // Méthode pour récupérer la description du palier
+    private function getTierDescription(Project $project, $tierIndex)
+    {
+        if ($tierIndex === null || !isset($project->funding_tiers[$tierIndex])) {
+            return null;
+        }
+    
+        return $project->funding_tiers[$tierIndex]['description'] ?? null;
+    }
+
     private function getContributionsData($request)
     {
         $user = auth()->user();

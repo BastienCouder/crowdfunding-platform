@@ -7,7 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Contribution extends Model
 {
     protected $fillable = [
-        'user_id', 'project_id', 'amount', 'anonymous',
+        'user_id', 
+        'project_id', 
+        'amount', 
+        'anonymous',
+        'tier_reward',
+        'tier_description'
     ];
 
     public function user()

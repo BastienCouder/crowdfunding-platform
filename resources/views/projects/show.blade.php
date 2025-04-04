@@ -375,27 +375,40 @@
                             </h2>
                             
                             @if(count($project->contributions) > 0)
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    @foreach ($project->contributions as $index => $contribution)
-                                        <div class="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow @if($index >= 6) hidden extra-contribution @endif">
-                                            <div class="flex items-center">
-                                                <img src="{{ $contribution->user->avatar }}" alt="{{ $contribution->user->name }}" class="w-12 h-12 rounded-full mr-4 border border-lime-200">
-                                                <div>
-                                                    <p class="font-semibold text-gray-900">{{ $contribution->user->name }}</p>
-                                                    <p class="text-sm text-gray-500">{{ $contribution->created_at->diffForHumans() }}</p>
-                                                </div>
-                                                <div class="ml-auto">
-                                                    <span class="text-lime-600 font-bold text-lg">{{ $contribution->amount }} €</span>
-                                                </div>
-                                            </div>
-                                            @if($contribution->message)
-                                                <div class="mt-3 pt-3 border-t border-gray-100">
-                                                    <p class="text-gray-700 italic">"{{ $contribution->message }}"</p>
-                                                </div>
-                                            @endif
-                                        </div>
-                                    @endforeach
-                                </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        @foreach ($project->contributions as $index => $contribution)
+            <div class="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow @if($index >= 6) hidden extra-contribution @endif">
+                <div class="flex items-center">
+                    @if($contribution->anonymous)
+                        <div class="w-12 h-12 rounded-full mr-4 border border-lime-200 bg-gray-100 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    @else
+                        <img src="{{ $contribution->user->avatar }}" 
+                             alt="{{ $contribution->user->name }}" 
+                             class="w-12 h-12 rounded-full mr-4 border border-lime-200">
+                    @endif
+                    <div>
+                        <p class="font-semibold text-gray-900">
+                            {{ $contribution->anonymous ? 'Anonyme' : $contribution->user->name }}
+                        </p>
+                        <p class="text-sm text-gray-500">{{ $contribution->created_at->diffForHumans() }}</p>
+                    </div>
+                    <div class="ml-auto">
+                        <span class="text-lime-600 font-bold text-lg">{{ $contribution->amount }} €</span>
+                    </div>
+                </div>
+                @if($contribution->message)
+                    <div class="mt-3 pt-3 border-t border-gray-100">
+                        <p class="text-gray-700 italic">"{{ $contribution->message }}"</p>
+                    </div>
+                @endif
+            </div>
+        @endforeach
+    </div>
+
                                 
                                 @if(count($project->contributions) > 6)
                                     <div class="mt-6 text-center">
@@ -587,10 +600,11 @@
                                 </div>
                             </div>
                             
-                            <!-- Message optionnel -->
-                            <div>
-                                <textarea name="message" rows="2" class="w-full border-gray-200 rounded-xl shadow-sm focus:ring-lime-500 focus:border-lime-500" placeholder="Ajouter un message (optionnel)"></textarea>
-                            </div>
+                            <div class="flex items-center">
+    <input id="anonymous" name="anonymous" type="checkbox" value="1" class="h-4 w-4 text-lime-600 border-gray-300 rounded">
+    <label for="anonymous" class="ml-2 text-sm text-gray-700">Contribuer anonymement</label>
+</div>
+
                             
                             <button type="submit" class="w-full bg-lime-500 hover:bg-lime-600 text-white font-medium py-3 px-4 rounded-xl transition-colors flex items-center justify-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
@@ -692,24 +706,6 @@
                     this.classList.add('border-lime-500', 'text-lime-600');
                 });
             });
-            
-            // Barre de progression flottante
-            const floatingProgress = document.getElementById('floating-progress');
-            const heroSection = document.querySelector('.relative.h-[500px]');
-            
-            if (floatingProgress && heroSection) {
-                window.addEventListener('scroll', function() {
-                    const heroBottom = heroSection.getBoundingClientRect().bottom;
-                    
-                    if (heroBottom <= 0) {
-                        floatingProgress.classList.remove('hidden', '-translate-y-full');
-                        floatingProgress.classList.add('translate-y-0');
-                    } else {
-                        floatingProgress.classList.remove('translate-y-0');
-                        floatingProgress.classList.add('-translate-y-full');
-                    }
-                });
-            }
             
             // Montants prédéfinis
             const amountPresets = document.querySelectorAll('.amount-preset');

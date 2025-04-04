@@ -7,7 +7,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ContributionController;
 use App\Http\Controllers\MigrationCheckerController;
 use App\Http\Controllers\FaqController;
-
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'welcome'])->name('welcome');
@@ -51,7 +51,20 @@ Route::middleware('auth')->group(function () {
     });
     
     Route::get('/projets/{project}', [ProjectController::class, 'show'])->name('projects.show');
-
+    
+    Route::middleware(['auth', 'can:access-admin'])->prefix('admin')->name('admin.')->group(function () {
+        
+        Route::get('/', [AdminController::class, 'index'])->name('dashboard');
+        Route::get('/projects', [AdminController::class, 'projects'])->name('projects');
+        Route::get('/users', [AdminController::class, 'users'])->name('users');
+       
+        Route::patch('/projects/{project}/status', [AdminController::class, 'updateProjectStatus'])->name('projects.status');
+      
+        Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
+        Route::get('/users/{user}/edit', [AdminController::class, 'editUser'])->name('users.edit');
+        Route::patch('/users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
+        Route::delete('/users/{user}', [AdminController::class, 'destroyUser'])->name('users.destroy');
+    });
 });
 
 require __DIR__.'/auth.php';

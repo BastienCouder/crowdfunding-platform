@@ -23,7 +23,10 @@ class Project extends Model
         'funding_tiers' => 'array',
         'faqs' => 'array',
     ];
-
+    public static function getStatuses()
+    {
+        return ['pending', 'approved', 'rejected', 'completed'];
+    }
     // Relation avec les images du projet
     public function images()
     {

@@ -13,6 +13,8 @@ return new class extends Migration {
             $table->foreignId('project_id')->constrained()->onDelete('cascade');
             $table->decimal('amount', 10, 2);
             $table->boolean('anonymous')->default(false);
+            $table->string('tier_reward')->nullable();
+            $table->text('tier_description')->nullable();
             $table->timestamps();
         });
     }
