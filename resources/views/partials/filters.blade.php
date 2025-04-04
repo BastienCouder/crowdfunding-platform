@@ -14,8 +14,10 @@
                 <div class="flex flex-wrap gap-2">
                     <select id="status-filter" class="w-auto pr-10 border border-gray-200 rounded-lg px-3 py-2 focus:ring-lime-500 focus:border-lime-500">
                         <option value="">Tous les statuts</option>
-                        <option value="active">Actifs</option>
+                        <option value="approved">Actifs</option>
+                        <option value="pending">En attente</option>
                         <option value="completed">Terminés</option>
+                        <option value="rejected">Refusés</option>
                         <option value="draft">Brouillons</option>
                     </select>
                     <select id="category-filter" class="w-auto pr-10 border border-gray-200 rounded-lg px-3 py-2 focus:ring-lime-500 focus:border-lime-500">

@@ -56,20 +56,45 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        @if ($project->end_date->isPast())
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                                                Terminé
-                                            </span>
-                                        @elseif ($project->is_draft)
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                                Brouillon
-                                            </span>
-                                        @else
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                Actif
-                                            </span>
-                                        @endif
-                                    </td>
+    @if ($project->is_draft)
+        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+            Brouillon
+        </span>
+    @else
+        @switch($project->status)
+            @case('pending')
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                    En attente
+                </span>
+                @break
+            @case('approved')
+                @if ($project->end_date->isPast())
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                        Terminé
+                    </span>
+                @else
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        Actif
+                    </span>
+                @endif
+                @break
+            @case('rejected')
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                    Rejeté
+                </span>
+                @break
+            @case('completed')
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                    Terminé
+                </span>
+                @break
+            @default
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                    Inconnu
+                </span>
+        @endswitch
+    @endif
+</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
                                             @php

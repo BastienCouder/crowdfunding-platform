@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Comment;
 use App\Models\Project;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
@@ -112,6 +113,23 @@ class CommentController extends Controller
                 $query->orderBy('replies_count', 'desc');
                 break;
         }
+    }
+
+    public function store(Request $request, Project $project)
+    {
+        $validated = $request->validate([
+            'content' => 'required|string|max:1000',
+        ]);
+
+        $comment = new Comment();
+        $comment->content = $validated['content'];
+        $comment->user_id = Auth::id();
+        $comment->project_id = $project->id;
+        $comment->save();
+
+        return redirect()
+            ->route('projects.show', $project)
+            ->with('success', 'Commentaire ajouté avec succès !');
     }
 
     private function calculateTotalComments($user)

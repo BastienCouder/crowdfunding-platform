@@ -13,7 +13,7 @@ class ProjectController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Project::with('user', 'category')->where('is_draft', false);
+        $query = Project::with('user', 'category')->where('is_draft', false)->where('status', 'approved');
     
         // Appliquer les filtres
         if ($request->has('search') && $request->search) {
@@ -154,27 +154,24 @@ public function storeStep3(Request $request)
         'risks' => 'nullable|string',
         'is_draft' => 'sometimes|boolean',
         
-        // Validation des paliers
-        'tier_amount' => 'sometimes|array',
-        'tier_amount.*' => 'required|numeric|min:1',
-        'tier_title' => 'required_with:tier_amount|array',
-        'tier_title.*' => 'required|string|max:255',
-        'tier_description' => 'sometimes|array',
+        // Validation des paliers (rendus optionnels)
+        'tier_amount' => 'nullable|array',
+        'tier_amount.*' => 'nullable|numeric|min:1',
+        'tier_title' => 'nullable|array',
+        'tier_title.*' => 'nullable|string|max:255',
+        'tier_description' => 'nullable|array',
         'tier_description.*' => 'nullable|string',
         
-        // Validation des FAQ
-        'faq_question' => 'sometimes|array',
-        'faq_question.*' => 'required|string|max:255',
-        'faq_answer' => 'sometimes|array',
+        // Validation des FAQ (rendues optionnelles)
+        'faq_question' => 'nullable|array',
+        'faq_question.*' => 'nullable|string|max:255',
+        'faq_answer' => 'nullable|array',
         'faq_answer.*' => 'nullable|string',
     ], [
-        // Messages personnalisés
-        'tier_amount.*.required' => 'Le montant de chaque palier est requis',
+        // Messages personnalisés (maintenant optionnels)
         'tier_amount.*.numeric' => 'Le montant doit être un nombre',
         'tier_amount.*.min' => 'Le montant doit être d\'au moins 1',
-        'tier_title.*.required' => 'Le titre de chaque palier est requis',
         'tier_title.*.string' => 'Le titre doit être une chaîne de caractères',
-        'faq_question.*.required' => 'La question FAQ est requise',
         'faq_question.*.string' => 'La question doit être une chaîne de caractères',
     ]);
 
@@ -188,26 +185,30 @@ public function storeStep3(Request $request)
                        ->with('error', 'Veuillez compléter les étapes précédentes');
     }
 
-    // Préparation des paliers de financement
+    // Préparation des paliers de financement (maintenant optionnels)
     $fundingTiers = [];
     if (!empty($validated['tier_amount'])) {
         foreach ($validated['tier_amount'] as $index => $amount) {
-            $fundingTiers[] = [
-                'amount' => $amount,
-                'title' => $validated['tier_title'][$index] ?? '',
-                'description' => $validated['tier_description'][$index] ?? null,
-            ];
+            if (!empty($amount) && !empty($validated['tier_title'][$index])) {
+                $fundingTiers[] = [
+                    'amount' => $amount,
+                    'title' => $validated['tier_title'][$index],
+                    'description' => $validated['tier_description'][$index] ?? null,
+                ];
+            }
         }
     }
 
-    // Préparation des FAQ
+    // Préparation des FAQ (maintenant optionnelles)
     $faqs = [];
     if (!empty($validated['faq_question'])) {
         foreach ($validated['faq_question'] as $index => $question) {
-            $faqs[] = [
-                'question' => $question,
-                'answer' => $validated['faq_answer'][$index] ?? null,
-            ];
+            if (!empty($question)) {
+                $faqs[] = [
+                    'question' => $question,
+                    'answer' => $validated['faq_answer'][$index] ?? null,
+                ];
+            }
         }
     }
 
@@ -229,15 +230,6 @@ public function storeStep3(Request $request)
         'current_amount' => 0,
         'status' => 'pending',
     ]);
-
-    // Ajout des images
-    foreach ($step2_images as $image) {
-        $project->images()->create([
-            'image_url' => $image['path'],
-            'is_main' => $image['is_main'] ?? false,
-            'mime_type' => Storage::disk('public')->mimeType($image['path']) ?? 'image/jpeg'
-        ]);
-    }
 
     return redirect()->route('projects.show', $project)
                    ->with('success', 'Projet créé avec succès !');
@@ -285,18 +277,18 @@ public function storeStep3(Request $request)
             'is_draft' => 'sometimes|boolean',
             'video_url' => 'nullable|url',
             
-            // Paliers
-            'tier_amount' => 'sometimes|array',
-            'tier_amount.*' => 'numeric|min:1',
-            'tier_reward' => 'sometimes|array',
-            'tier_reward.*' => 'string|max:255',
-            'tier_description' => 'sometimes|array',
+            // Paliers rendus optionnels
+            'tier_amount' => 'nullable|array',
+            'tier_amount.*' => 'nullable|numeric|min:1',
+            'tier_reward' => 'nullable|array',
+            'tier_reward.*' => 'nullable|string|max:255',
+            'tier_description' => 'nullable|array',
             'tier_description.*' => 'nullable|string',
             
-            // FAQ
-            'faq_question' => 'sometimes|array',
-            'faq_question.*' => 'string|max:255',
-            'faq_answer' => 'sometimes|array',
+            // FAQ rendues optionnelles
+            'faq_question' => 'nullable|array',
+            'faq_question.*' => 'nullable|string|max:255',
+            'faq_answer' => 'nullable|array',
             'faq_answer.*' => 'nullable|string',
             
             // Images
@@ -323,44 +315,48 @@ public function storeStep3(Request $request)
         $project->update($updateData);
         
     
-        // Traitement des paliers
-        if ($request->has('tier_amount')) {
-            $fundingTiers = [];
-            foreach ($request->tier_amount as $index => $amount) {
-                $fundingTiers[] = [
-                    'amount' => $amount,
-                    'reward' => $request->tier_reward[$index] ?? '',
-                    'description' => $request->tier_description[$index] ?? null,
-                ];
+        // Traitement des paliers (optionnels)
+        $fundingTiers = [];
+        if (!empty($validatedData['tier_amount'])) {
+            foreach ($validatedData['tier_amount'] as $index => $amount) {
+                if (!empty($amount) && !empty($validatedData['tier_reward'][$index])) {
+                    $fundingTiers[] = [
+                        'amount' => $amount,
+                        'reward' => $validatedData['tier_reward'][$index],
+                        'description' => $validatedData['tier_description'][$index] ?? null,
+                    ];
+                }
             }
-            $project->funding_tiers = $fundingTiers;
         }
+        $project->funding_tiers = $fundingTiers;
     
-        // Traitement des FAQ
-        if ($request->has('faq_question')) {
-            $faqs = [];
-            foreach ($request->faq_question as $index => $question) {
-                $faqs[] = [
-                    'question' => $question,
-                    'answer' => $request->faq_answer[$index] ?? null,
-                ];
+        // Traitement des FAQ (optionnelles)
+        $faqs = [];
+        if (!empty($validatedData['faq_question'])) {
+            foreach ($validatedData['faq_question'] as $index => $question) {
+                if (!empty($question)) {
+                    $faqs[] = [
+                        'question' => $question,
+                        'answer' => $validatedData['faq_answer'][$index] ?? null,
+                    ];
+                }
             }
-            $project->faqs = $faqs;
         }
+        $project->faqs = $faqs;
     
         $project->save();
     
-     // Suppression des images sélectionnées
-     if ($request->has('delete_images')) {
-        $imagesToDelete = ProjectImage::whereIn('id', $request->delete_images)
-            ->where('project_id', $project->id)
-            ->get();
-            
-        foreach ($imagesToDelete as $image) {
-            $image->delete(); // Déclenchera la suppression physique via l'event
+        // Suppression des images sélectionnées
+        if ($request->has('delete_images')) {
+            $imagesToDelete = ProjectImage::whereIn('id', $request->delete_images)
+                ->where('project_id', $project->id)
+                ->get();
+                
+            foreach ($imagesToDelete as $image) {
+                $image->delete();
+            }
         }
-    }
-    
+        
         // Gestion des nouvelles images
         if ($request->hasFile('new_images')) {
             foreach ($request->file('new_images') as $image) {
@@ -369,17 +365,14 @@ public function storeStep3(Request $request)
                     
                     $project->images()->create([
                         'image_url' => $path,
-                        'is_main' => false // Vous pouvez ajouter une logique pour définir l'image principale
+                        'is_main' => false
                     ]);
                 }
             }
         }
-
-
     
         return redirect()->route('projects.my-projects', $project)->with('success', 'Projet mis à jour avec succès !');
     }
-
 public function edit(Project $project)
 {
     $categories = Category::all();
@@ -430,7 +423,13 @@ public function edit(Project $project)
                     $query->where('is_draft', false)
                           ->where('end_date', '>=', now());
                     break;
+                case 'pending':
+                    $query->where('end_date', '<', now());
+                    break;
                 case 'completed':
+                    $query->where('end_date', '<', now());
+                    break;
+                case 'rejected':
                     $query->where('end_date', '<', now());
                     break;
                 case 'draft':
